@@ -14,9 +14,12 @@
   oidcPagesInternalPort = 8080;
   oidcPagesFrontendUrl = "https://${oidcPagesDomain}";
 
+  keycloakInternalPort = 9080;
   keycloakFrontendUrl = "https://${keycloakDomain}";
   keycloakInitialAdminPassword = "h4Iho\"JFn't2>iQIR9";
   keycloakAdminPasswordFile = pkgs.writeText "admin-password" "${keycloakInitialAdminPassword}";
+
+  pagesPath = "/tmp/pages";
 
   client = {
     clientId = "test-client";
@@ -89,22 +92,35 @@ in
 
         networking.firewall.allowedTCPPorts = [80 443];
 
-        # using nginx to transfer the client secret file from keycloak to the
-        # OIDC pages VM
         services.nginx = {
           enable = true;
-          virtualHosts.${tmpDomain} = {
+          # using nginx to transfer the client secret file from keycloak to the
+          # OIDC pages VM
+          virtualHosts."${tmpDomain}" = {
             root = envFileDir;
             extraConfig = "autoindex on;";
+          };
+
+          virtualHosts."${keycloakDomain}" = {
+            onlySSL = true;
+            locations."/".proxyPass = "http://127.0.0.1:${builtins.toString keycloakInternalPort}";
+            sslCertificateKey = ./keycloak.local.key.pem;
+            sslCertificate = ./keycloak.local.cert.pem;
           };
         };
 
         services.keycloak = {
           enable = true;
-          settings.hostname = keycloakDomain;
+          settings = {
+            http-port = keycloakInternalPort;
+            http-host = "127.0.0.1";
+            proxy = "edge";
+            hostname = keycloakFrontendUrl;
+            hostname-backchannel-dynamic = false;
+            # strip date
+            log-console-format = "%-5p [%c] (%t) %s%e%n";
+          };
           initialAdminPassword = keycloakInitialAdminPassword;
-          sslCertificate = self + "/nixos/tests/${keycloakDomain}.cert.pem";
-          sslCertificateKey = self + "/nixos/tests/${keycloakDomain}.key.pem";
           database = {
             type = "postgresql";
             username = "bogus";
@@ -134,7 +150,7 @@ in
             public_url = oidcPagesFrontendUrl;
             issuer_url = "${keycloakFrontendUrl}/realms/${realm.realm}";
             client_id = client.clientId;
-            pages_path = ./pages;
+            pages_path = pagesPath;
             log_level = "info";
             bind_addrs = [pagesInternalAddr];
           };
@@ -178,7 +194,7 @@ in
 
       start_all()
       keycloak.wait_for_unit("keycloak.service")
-      keycloak.wait_for_open_port(443)
+      keycloak.wait_for_open_port(${builtins.toString keycloakInternalPort})
       keycloak.wait_until_succeeds("curl -sSf ${keycloakFrontendUrl}")
 
       # Get an admin interface access token
@@ -254,6 +270,16 @@ in
       machine.wait_until_succeeds("curl http://${tmpDomain}/${envFileName} -o ${envFilePath}")
       machine.succeed("curl http://${tmpDomain}/client_secret -o client_secret")
       print(machine.succeed("cat ${envFilePath}"))
+
+      # create some pages
+      page_content: str = "<p>Hello World from {name}</p>"
+      notes_content: str = page_content.format(name="notes")
+      top_secret_content: str = page_content.format(name="top_secret")
+      machine.succeed(
+          "mkdir -p ${pagesPath}/{notes,top_secret}",
+          f"echo '{notes_content}' > ${pagesPath}/notes/index.html",
+          f"echo '{top_secret_content}' > ${pagesPath}/top_secret/index.html",
+      )
 
       # restart the service now that a valid environment file containing the client
       # secret exists
