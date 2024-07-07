@@ -17,7 +17,7 @@
   {% if pages.len() > 0 %}
     <ul>
       {% for page in pages %}
-        <li><a href="/p/{{ page }}/index.html">{{ page }}</a></li>
+        <li><a href="/p/{{ page.dir }}/index.html">{{ page.title }}</a></li>
       {% endfor %}
     </ul>
   {% else %}

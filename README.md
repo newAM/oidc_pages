@@ -48,7 +48,6 @@ These features may or may not happen.
 * [Pretty error pages](https://docs.rs/tower-http/0.5.2/tower_http/services/struct.ServeDir.html#method.not_found_service)
 * Serving pages from subdomains instead of paths
 * Pictorial preview of pages
-* Displaying page names with the display name in their `index.html`
 
 ## Security
 
@@ -82,7 +81,7 @@ You will need to bring a reverse proxy for TLS, I suggest [nginx].
   * Authentication flow: `Standard flow` (all others disabled)
 * Create roles for the newly created client
   * The `admin` role can view all pages
-  * All other roles allow users to access a page of the same name
+  * All other roles allow users to access pages with a directory of the same name
 
 ### NixOS Configuration
 

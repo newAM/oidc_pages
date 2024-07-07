@@ -25,12 +25,30 @@ pub struct User {
     roles: Vec<String>,
 }
 
+#[derive(PartialEq, Eq)]
+pub struct Page {
+    title: String,
+    dir: String,
+}
+
+impl PartialOrd for Page {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Page {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.title.to_lowercase().cmp(&other.title.to_lowercase())
+    }
+}
+
 #[derive(Template)]
 #[template(path = "index.html")]
 struct IndexTemplate {
     title: String,
     user: Option<User>,
-    pages: Vec<String>,
+    pages: Vec<Page>,
 }
 
 struct HtmlTemplate<T>(T);
@@ -60,8 +78,26 @@ fn user_can_view_page(roles: &[String], page: &String) -> bool {
     roles.contains(&"admin".to_string()) || roles.contains(page)
 }
 
-async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<String> {
-    let mut ret: Vec<String> = vec![];
+async fn page_title(index: &PathBuf) -> anyhow::Result<String> {
+    let index_html: String = tokio::fs::read_to_string(index)
+        .await
+        .with_context(|| format!("Failed to read {}", index.to_string_lossy()))?;
+
+    let document = scraper::Html::parse_document(&index_html);
+
+    let title_selector = scraper::Selector::parse("title")
+        .ok()
+        .with_context(|| format!("Failed to parse {}", index.to_string_lossy()))?;
+
+    document
+        .select(&title_selector)
+        .next()
+        .map(|ele| ele.inner_html())
+        .with_context(|| format!("Failed to find title in {}", index.to_string_lossy()))
+}
+
+async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<Page> {
+    let mut ret: Vec<Page> = vec![];
     let mut dir_entries = match tokio::fs::read_dir(&path).await {
         Ok(de) => de,
         Err(e) => {
@@ -83,7 +119,19 @@ async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<String> {
         {
             if let Ok(page) = entry.file_name().into_string() {
                 if user_can_view_page(roles, &page) {
-                    ret.push(page);
+                    let mut index: PathBuf = path.clone();
+                    index.push(&page);
+                    index.push("index.html");
+                    match page_title(&index).await {
+                        Ok(title) => ret.push(Page { dir: page, title }),
+                        Err(e) => {
+                            log::warn!("Failed to get page title: {e}");
+                            ret.push(Page {
+                                dir: page.clone(),
+                                title: page,
+                            })
+                        }
+                    }
                 }
             } else {
                 log::warn!("Encountered non-UTF-8 directory");
@@ -109,7 +157,7 @@ pub async fn index(
                 .into_response();
         }
     };
-    let pages: Vec<String> = match user.as_ref() {
+    let pages: Vec<Page> = match user.as_ref() {
         Some(user) => list_pages(state.pages_path.clone(), &user.roles).await,
         None => vec![],
     };
