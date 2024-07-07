@@ -127,14 +127,7 @@ in {
     enable = true;
     virtualHosts."${pagesDomain}" = {
       onlySSL = true;
-      locations = {
-        "/".proxyPass = "http://${bindAddr}";
-        # pages are private, deny search indexing
-        "= /robots.txt" = {
-          return = ''200 "User-agent: *\nDisallow: /\n"'';
-          extraConfig = "add_header Content-Type text/plain;";
-        };
-      };
+      locations."/".proxyPass = "http://${bindAddr}";
     };
   };
 }

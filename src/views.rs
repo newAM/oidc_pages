@@ -455,3 +455,12 @@ pub async fn callback(
         }
     }
 }
+
+pub async fn robots_txt() -> axum::response::Response {
+    const BODY: &str = "User-agent: *\nDisallow: /\n";
+    axum::response::Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "text/plain; charset=UTF-8")
+        .body(BODY.into())
+        .expect("robots.txt construction failed")
+}
