@@ -42,6 +42,7 @@ fn deny_unknown_fields() {
                 "bind_addrs": ["127.0.0.1:8000"],
                 "log_level": "off",
                 "title": "OIDC Pages",
+                "assets_path": "assets",
                 "some_extra_field": "hello world"
             }"#
             .as_bytes(),
@@ -66,7 +67,8 @@ const MOCK_CONFIG: &str = r#"{
     "pages_path": "/tmp",
     "bind_addrs": ["127.0.0.1:8000"],
     "log_level": "off",
-    "title": "OIDC Pages"
+    "title": "OIDC Pages",
+    "assets_path": "assets"
 }"#;
 
 #[test]

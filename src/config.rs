@@ -15,6 +15,7 @@ struct ConfigFile {
     log_level: String,
     pages_path: PathBuf,
     title: String,
+    assets_path: PathBuf,
 }
 
 #[derive(Clone)]
@@ -26,6 +27,7 @@ pub struct Config {
     pub bind_addrs: Vec<SocketAddr>,
     pub pages_path: PathBuf,
     pub title: String,
+    pub assets_path: PathBuf,
 }
 
 impl Config {
@@ -92,6 +94,7 @@ impl Config {
             bind_addrs: config.bind_addrs,
             pages_path: config.pages_path,
             title: config.title,
+            assets_path: config.assets_path,
         })
     }
 }

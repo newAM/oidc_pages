@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Added pretty page titles. Pages now display the HTML title instead of directory path.
-- Added a `robots.txt` endpoint to the server.
+* Added pretty page titles. Pages now display the HTML title instead of directory path.
+* Added a `robots.txt` endpoint to the server.
+
+### Fixed
+* Fixed missing favicon and CSS in NixOS release.
 
 ## [1.0.0] - 2024-07-07
 
