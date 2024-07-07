@@ -404,7 +404,7 @@ async fn fallible_callback(
         &decoding_key,
         &validation,
     )
-    .context("Failed to decode access token")?;
+    .context("Failed to validate access token")?;
 
     let email: String = claims
         .email()
