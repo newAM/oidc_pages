@@ -1,0 +1,7 @@
+/target
+client_secret.txt
+config.json
+roots/
+.direnv/
+result
+*.txt

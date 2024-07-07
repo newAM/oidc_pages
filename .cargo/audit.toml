@@ -1,0 +1,7 @@
+[advisories]
+# https://github.com/ramosbugs/openidconnect-rs/issues/140
+ignore = ["RUSTSEC-2023-0071"]
+
+[output]
+quiet = false
+deny = ["warnings"]
