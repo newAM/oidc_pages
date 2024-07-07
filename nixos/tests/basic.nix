@@ -292,6 +292,9 @@ in
       # check systemd logging works
       machine.succeed('journalctl -u oidc_pages.service --grep "Starting server"')
 
+      # check favicon exists
+      machine.succeed("curl -sSf ${oidcPagesFrontendUrl}/assets/favicon.svg")
+
       authenticated: str = "You are signed in as"
       unauthenticated: str = "Login to view documents..."
 
