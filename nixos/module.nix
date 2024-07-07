@@ -119,7 +119,7 @@ in {
           "AF_INET6"
           "AF_UNIX"
         ];
-        DeviceAllow = [];
+        DeviceAllow = "";
         NoNewPrivileges = true;
         PrivateDevices = true;
         PrivateMounts = true;
@@ -148,6 +148,7 @@ in {
         ProtectProc = "invisible";
         ProtectHostname = true;
         ProcSubset = "pid";
+        UMask = "0077";
       };
     };
   };
