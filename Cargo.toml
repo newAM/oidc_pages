@@ -5,7 +5,7 @@ authors = ["Alex Martens <alex@thinglab.org>"]
 edition = "2021"
 repository = "https://github.com/newAM/oidc_pages"
 license = "AGPL-3.0-or-later"
-description = "Serve static HTML with OIDC for authorization and authentication."
+description = "Serve static HTML with OIDC for authorization and authentication"
 keywords = ["oidc", "pages"]
 categories = ["visualization", "web-programming::http-server", "development-tools"]
 

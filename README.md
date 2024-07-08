@@ -31,7 +31,7 @@ There are two assumptions that make this keycloak-specific.
 1. The OIDC specification does not define a type for the access token,
    keycloak uses a JSON web token which is the de-facto standard.
 2. The OIDC specification does not provide a standard way to read roles.
-   Roles are assumed to be under `resource_access` -> client ID -> `roles`.
+   Roles are assumed to be under `resource_access` -> `<client_id>` -> `roles`.
 
 Majority of OIDC providers use a JWT for the access token,
 the only modifications necessary should be how to obtain roles.
@@ -82,6 +82,15 @@ You will need to bring a reverse proxy for TLS, I suggest [nginx].
 * Create roles for the newly created client
   * The `admin` role can view all pages
   * All other roles allow users to access pages with a directory of the same name
+* Create a dedicated audience mapper the newly created client 
+  * Navigate to **Clients** -> `<client_id>` -> **Client scopes**
+    -> `<client_id>-dedicated` -> **Configure a new mapper** -> **Audience**
+  * Name: `aud-mapper-<client_id>`
+  * Included Client Audience: `<client_id>`
+  * Add to ID token: `On`
+  * Add to access token: `On`
+  * Add to lightweight access token: `Off`
+  * Add to token introspection: `On`
 
 ### NixOS Configuration
 
@@ -127,14 +136,7 @@ in {
     enable = true;
     virtualHosts."${pagesDomain}" = {
       onlySSL = true;
-      locations = {
-        "/".proxyPass = "http://${bindAddr}";
-        # pages are private, deny search indexing
-        "= /robots.txt" = {
-          return = ''200 "User-agent: *\nDisallow: /\n"'';
-          extraConfig = "add_header Content-Type text/plain;";
-        };
-      };
+      locations."/".proxyPass = "http://${bindAddr}";
     };
   };
 }

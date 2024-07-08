@@ -67,6 +67,12 @@ in {
             example = "Company Pages";
             type = lib.types.str;
           };
+
+          assets_path = lib.mkOption {
+            description = "Path to static assets.";
+            type = lib.types.path;
+            default = "${pkgs.oidc_pages}/share/oidc_pages/assets";
+          };
         };
       };
     };
@@ -113,7 +119,7 @@ in {
           "AF_INET6"
           "AF_UNIX"
         ];
-        DeviceAllow = [];
+        DeviceAllow = "";
         NoNewPrivileges = true;
         PrivateDevices = true;
         PrivateMounts = true;
@@ -142,6 +148,7 @@ in {
         ProtectProc = "invisible";
         ProtectHostname = true;
         ProcSubset = "pid";
+        UMask = "0077";
       };
     };
   };

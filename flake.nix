@@ -39,9 +39,14 @@
 
       strictDeps = true;
 
+      postInstall = ''
+        mkdir -p $out/share/oidc_pages/assets
+        cp -r ${./assets}/* $out/share/oidc_pages/assets
+      '';
+
       meta = with nixpkgs.lib; {
-        description = "Serve static HTML behind OIDC";
-        homepage = "https://github.com/newAM/oidc_pages";
+        description = "Serve static HTML with OIDC for authorization and authentication";
+        repository = "https://github.com/newAM/oidc_pages";
         license = [licenses.agpl3Plus];
         maintainers = with maintainers; [newam];
         mainProgram = "oidc_pages";

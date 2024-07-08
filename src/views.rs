@@ -102,7 +102,7 @@ async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<Page> {
         Ok(de) => de,
         Err(e) => {
             log::error!(
-                "Failed to list pages from {}: {}",
+                "Failed to list pages from {}: {:?}",
                 path.to_string_lossy(),
                 e
             );
@@ -125,7 +125,7 @@ async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<Page> {
                     match page_title(&index).await {
                         Ok(title) => ret.push(Page { dir: page, title }),
                         Err(e) => {
-                            log::warn!("Failed to get page title: {e}");
+                            log::warn!("Failed to get page title: {e:?}");
                             ret.push(Page {
                                 dir: page.clone(),
                                 title: page,
@@ -152,7 +152,7 @@ pub async fn index(
             session.clear().await;
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to load session: {e}"),
+                format!("Failed to load session: {e:?}"),
             )
                 .into_response();
         }
@@ -183,7 +183,7 @@ pub async fn pages(
         Err(e) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to load session: {e}"),
+                format!("Failed to load session: {e:?}"),
             )
                 .into_response()
         }
@@ -234,7 +234,7 @@ pub async fn login(
         Ok(_) => Redirect::temporary(auth_url.as_str()).into_response(),
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Failed store login session.  Error: {e}"),
+            format!("Failed store login session.  Error: {e:?}"),
         )
             .into_response(),
     }
@@ -245,7 +245,7 @@ pub async fn logout(session: Session) -> axum::response::Response {
         Ok(_) => Redirect::temporary("/").into_response(),
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Failed to logout.  Error: {e}"),
+            format!("Failed to logout.  Error: {e:?}"),
         )
             .into_response(),
     }
@@ -404,7 +404,7 @@ async fn fallible_callback(
         &decoding_key,
         &validation,
     )
-    .context("Failed to decode access token")?;
+    .context("Failed to validate access token")?;
 
     let email: String = claims
         .email()
@@ -454,4 +454,13 @@ pub async fn callback(
             (StatusCode::UNAUTHORIZED, msg).into_response()
         }
     }
+}
+
+pub async fn robots_txt() -> axum::response::Response {
+    const BODY: &str = "User-agent: *\nDisallow: /\n";
+    axum::response::Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "text/plain; charset=UTF-8")
+        .body(BODY.into())
+        .expect("robots.txt construction failed")
 }
