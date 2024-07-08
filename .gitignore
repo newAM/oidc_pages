@@ -6,3 +6,4 @@ roots/
 result
 *.txt
 node_modules
+dist/
