@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Fixed missing favicon and CSS in NixOS release.
 * Fixed missing audience mapper instructions in keycloak setup documentation.
+* Fixed user receiving authentication errors if they have no roles.
 
 ## [1.0.0] - 2024-07-07
 
