@@ -2,10 +2,7 @@
   "name": "oidc_pages",
   "version": "1.0.0",
   "description": "OIDC pages serves static HTML documents with OIDC for authentication and\r per-document authorization (permissions).",
-  "main": "src/index.js",
-  "directories": {
-    "test": "tests"
-  },
+  "main": "frontend/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --mode development",

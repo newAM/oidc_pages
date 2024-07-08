@@ -1,4 +1,4 @@
-// src/components/ListItemCard.js
+// frontend/components/ListItemCard.js
 import React from 'react';
 import { Card } from 'react-bootstrap';
 
