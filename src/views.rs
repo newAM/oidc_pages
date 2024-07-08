@@ -412,16 +412,20 @@ async fn fallible_callback(
         .context("OIDC server did not provide email address")?
         .to_string();
 
-    let roles: &Vec<serde_json::Value> = access_token
+    let maybe_roles: Option<&serde_json::Value> = access_token
         .claims
         .get("resource_access")
         .and_then(|ra| ra.get(client_id))
-        .and_then(|cid| cid.get("roles"))
-        .context("roles not in access token")?
-        .as_array()
-        .context("roles in access token is not an array")?;
-    let roles: Vec<String> =
-        to_string_array(roles).context("roles in access token is not an array of strings")?;
+        .and_then(|cid| cid.get("roles"));
+
+    let roles: Vec<String> = if let Some(roles) = maybe_roles {
+        let roles_json: &Vec<serde_json::Value> = roles
+            .as_array()
+            .context("roles in access token is not an array")?;
+        to_string_array(roles_json).context("roles in access token is not an array of strings")?
+    } else {
+        vec![]
+    };
 
     let user: User = User { email, roles };
 
