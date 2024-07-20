@@ -468,3 +468,14 @@ pub async fn robots_txt() -> axum::response::Response {
         .body(BODY.into())
         .expect("robots.txt construction failed")
 }
+
+#[cfg(test)]
+mod tests {
+    use super::robots_txt;
+
+    #[tokio::test]
+    async fn test_robots_txt() {
+        let resp = robots_txt().await;
+        assert!(resp.status().is_success());
+    }
+}
