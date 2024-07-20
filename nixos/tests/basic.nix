@@ -299,11 +299,9 @@ in
       unauthenticated: str = "Login to view documents..."
 
       # check we are not authenticated
-      machine.succeed(
-          "curl -sSf ${oidcPagesFrontendUrl} -o index.html",
-          f"grep -v '{authenticated}' index.html",
-          f"grep '{unauthenticated}' index.html",
-      )
+      index_html_pre_login: str = machine.succeed("curl -sSf ${oidcPagesFrontendUrl}")
+      assert unauthenticated in index_html_pre_login
+      assert authenticated not in index_html_pre_login
 
       # check unauthenticated users cannot view pages
       machine.succeed(
@@ -332,13 +330,19 @@ in
       ).rstrip()
       print(f"{post_login_redirect_url=}")
 
-      # make the callback, check that authentication succeeded
-      machine.succeed(
-          f"curl -L -sSf -b pages_cookies.txt -o index.html '{post_login_redirect_url}'",
-          f"grep '{authenticated}' index.html",
-          f"grep -v '{unauthenticated}' index.html",
+      # make the callback
+      index_html: str = machine.succeed(
+          f"curl -L -sSf -b pages_cookies.txt '{post_login_redirect_url}'",
       )
-      print(machine.succeed("cat index.html"))
+      print(index_html)
+
+      # check that authentication succeeded
+      assert authenticated in index_html, "Authenticated string not in index"
+      assert unauthenticated not in index_html, "Unauthenticated string in index"
+
+      # check index.html only lists the pages we are authorized for
+      assert "notes" in index_html, "notes not listed in index"
+      assert "top_secret" not in index_html, "top_secret listed in index"
 
       # check that we can only view the pages we are authorized for
       machine.succeed(
