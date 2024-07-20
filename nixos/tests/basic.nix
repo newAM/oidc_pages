@@ -350,6 +350,11 @@ in
           'curl -sS -b pages_cookies.txt -o /dev/null -w "%{http_code}" ${oidcPagesFrontendUrl}/p/top_secret/index.html | grep -q "^404$"',
       )
 
+      # check that a correct page with invalid path results in a 404
+      machine.succeed(
+          'curl -sS -b pages_cookies.txt -o /dev/null -w "%{http_code}" ${oidcPagesFrontendUrl}/p/notes/not_a_real_page.html | grep -q "^404$"',
+      )
+
       # basic directory traversal attack check
       machine.succeed(
           'curl -sS -b pages_cookies.txt -o /dev/null -w "%{http_code}" ${oidcPagesFrontendUrl}/p/notes/../../top_secret/index.html | grep -q "^404$"',
