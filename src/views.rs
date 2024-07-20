@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use crate::{
-    util::{self, to_string_array, UnwrapInfallible},
+    util::{self, page_title, to_string_array, UnwrapInfallible},
     State,
 };
 use anyhow::Context;
@@ -78,24 +78,6 @@ fn user_can_view_page(roles: &[String], page: &String) -> bool {
     roles.contains(&"admin".to_string()) || roles.contains(page)
 }
 
-async fn page_title(index: &PathBuf) -> anyhow::Result<String> {
-    let index_html: String = tokio::fs::read_to_string(index)
-        .await
-        .with_context(|| format!("Failed to read {}", index.to_string_lossy()))?;
-
-    let document = scraper::Html::parse_document(&index_html);
-
-    let title_selector = scraper::Selector::parse("title")
-        .ok()
-        .with_context(|| format!("Failed to parse {}", index.to_string_lossy()))?;
-
-    document
-        .select(&title_selector)
-        .next()
-        .map(|ele| ele.inner_html())
-        .with_context(|| format!("Failed to find title in {}", index.to_string_lossy()))
-}
-
 async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<Page> {
     let mut ret: Vec<Page> = vec![];
     let mut dir_entries = match tokio::fs::read_dir(&path).await {
@@ -122,16 +104,29 @@ async fn list_pages(path: PathBuf, roles: &[String]) -> Vec<Page> {
                     let mut index: PathBuf = path.clone();
                     index.push(&page);
                     index.push("index.html");
-                    match page_title(&index).await {
-                        Ok(title) => ret.push(Page { dir: page, title }),
+
+                    match tokio::fs::read_to_string(&index).await {
+                        Ok(content) => ret.push(Page {
+                            dir: page.clone(),
+                            title: match page_title(&content) {
+                                Some(title) => title,
+                                None => {
+                                    log::warn!(
+                                        "Failed to read title from {}",
+                                        index.to_string_lossy()
+                                    );
+                                    page
+                                }
+                            },
+                        }),
                         Err(e) => {
-                            log::warn!("Failed to get page title: {e:?}");
+                            log::warn!("Failed to read {} {:?}", index.to_string_lossy(), e);
                             ret.push(Page {
                                 dir: page.clone(),
                                 title: page,
                             })
                         }
-                    }
+                    };
                 }
             } else {
                 log::warn!("Encountered non-UTF-8 directory");

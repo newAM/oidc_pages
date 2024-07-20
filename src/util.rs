@@ -29,3 +29,38 @@ pub fn to_string_array(v: &Vec<serde_json::Value>) -> Option<Vec<String>> {
     }
     Some(ret)
 }
+
+pub fn page_title(index_html: &str) -> Option<String> {
+    let document: scraper::Html = scraper::Html::parse_document(index_html);
+
+    let title_selector: scraper::Selector =
+        scraper::Selector::parse("title").expect("Failed to create selector");
+
+    document
+        .select(&title_selector)
+        .next()
+        .map(|ele| ele.inner_html())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::page_title;
+
+    #[test]
+    fn test_page_title() {
+        assert_eq!(
+            page_title("<title>Hello, World!</title>"),
+            Some("Hello, World!".to_string())
+        );
+        assert_eq!(page_title("<title></title>"), Some("".to_string()));
+        assert_eq!(
+            page_title("<title>Title Missing Closing Tag"),
+            Some("Title Missing Closing Tag".to_string())
+        );
+    }
+
+    #[test]
+    fn test_page_title_err() {
+        assert_eq!(page_title(""), None);
+    }
+}
