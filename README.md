@@ -40,10 +40,10 @@ the only modifications necessary should be how to obtain roles.
 
 These features may or may not happen.
 
-* Public documents
+* Public pages
 * Persistent user sessions
 * Refresh tokens
-* Serving pages from S3
+* API for uploading pages over https
 * Listening on a Unix domain socket when [axum#2479](https://github.com/tokio-rs/axum/pull/2479) is resolved
 * [Pretty error pages](https://docs.rs/tower-http/0.5.2/tower_http/services/struct.ServeDir.html#method.not_found_service)
 * Serving pages from subdomains instead of paths
