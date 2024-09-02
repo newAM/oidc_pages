@@ -6,7 +6,6 @@
     advisory-db.flake = false;
 
     crane.url = "github:ipetkov/crane";
-    crane.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
