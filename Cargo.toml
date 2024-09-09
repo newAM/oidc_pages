@@ -10,7 +10,7 @@ keywords = ["oidc", "pages"]
 categories = ["visualization", "web-programming::http-server", "development-tools"]
 
 [dependencies]
-anyhow = "1.0.86"
+anyhow = "1.0.87"
 askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.4.0"
 axum = "0.7.5"
