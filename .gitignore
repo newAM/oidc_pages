@@ -5,3 +5,5 @@ roots/
 .direnv/
 result
 *.txt
+node_modules
+dist/
