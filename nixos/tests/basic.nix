@@ -114,7 +114,8 @@ in
           settings = {
             http-port = keycloakInternalPort;
             http-host = "127.0.0.1";
-            proxy = "edge";
+            proxy-headers = "xforwarded";
+            http-enabled = true;
             hostname = keycloakFrontendUrl;
             hostname-backchannel-dynamic = false;
             # strip date
@@ -182,9 +183,8 @@ in
         };
 
         environment.systemPackages = with pkgs; [
-          html-tidy
+          htmlq
           jq
-          xmlstarlet
         ];
       };
     };
@@ -318,8 +318,7 @@ in
       # extract the login form from the redirect
       machine.succeed(
           f"curl -sSf -c sso_cookies.txt -o login_page.html '{sso_login_url}'",
-          "tidy -asxml -q -m login_page.html || true",
-          "xml sel -T -t -m \"_:html/_:body/_:div/_:div/_:div/_:div/_:div/_:div/_:form[@id='kc-form-login']\" -v @action login_page.html > form_post_url.txt",
+          "htmlq '#kc-form-login' --attribute action --filename login_page.html --output form_post_url.txt",
       )
       form_post_url: str = machine.succeed("cat form_post_url.txt").rstrip()
       print(f"{form_post_url=}")
