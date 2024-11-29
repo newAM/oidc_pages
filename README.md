@@ -62,6 +62,7 @@ Please report vulnerabilities to my git committer email.
 * Templating engine: [askama](https://github.com/djc/askama)
 * OpenID Connect library: [openidconnect-rs](https://github.com/ramosbugs/openidconnect-rs)
 * Favicon provided by [Flowbite](https://flowbite.com/icons)
+* Frontend: [React](https://react.dev)
 
 ## Usage
 
