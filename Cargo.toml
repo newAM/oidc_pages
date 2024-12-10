@@ -17,7 +17,7 @@ axum = "0.7.5"
 jsonwebtoken = "9.3.0"
 log = "0.4.21"
 openidconnect = { version = "4.0.0-rc.1", default-features = false, features = ["native-tls", "reqwest", "timing-resistant-secret-traits"] }
-scraper = "0.21.0"
+scraper = "0.22.0"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 subtle = "2.6.0"
