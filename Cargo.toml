@@ -12,7 +12,7 @@ categories = ["visualization", "web-programming::http-server", "development-tool
 [dependencies]
 anyhow = "1.0.86"
 askama = "0.12.1"
-axum = "0.7.5"
+axum = "0.8.1"
 jsonwebtoken = "9.3.0"
 log = "0.4.21"
 openidconnect = { version = "4.0.0-rc.1", default-features = false, features = ["native-tls", "reqwest", "timing-resistant-secret-traits"] }
@@ -24,7 +24,7 @@ systemd-journal-logger = "2.1.1"
 tokio = { version = "1.38.0", features = ["full"] }
 tower = { version = "0.5.0", features = ["util"] }
 tower-http = { version = "0.6.0", default-features = false, features = ["fs"] }
-tower-sessions = { version = "0.13.0", default-features = false, features = ["axum-core", "private", "memory-store"] }
+tower-sessions = { git = "https://github.com/maxcountryman/tower-sessions.git", rev = "c005ac54881967d4ab40a002d009e329b3f23f1e", default-features = false, features = ["axum-core", "private", "memory-store"] }
 url = "2.5.2"
 
 [dev-dependencies]

@@ -101,7 +101,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/logout", get(views::logout))
         .route("/callback", get(views::callback))
         .route("/robots.txt", get(views::robots_txt))
-        .route("/p/:page_name/*page_path", get(views::pages))
+        .route("/p/{page_name}/{*page_path}", get(views::pages))
         .nest_service("/assets", ServeDir::new(config.assets_path))
         .layer(session_layer)
         .with_state(State {
