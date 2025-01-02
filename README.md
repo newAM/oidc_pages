@@ -115,6 +115,8 @@ in {
   services.oidc_pages = {
     enable = true;
     environmentFiles = [config.sops.secrets.oidc_pages.path];
+    # give nginx access to oidc_pages.socket
+    socketUser = config.services.nginx.user;
     settings = {
       public_url = "https://${pagesDomain}";
       issuer_url = "https://sso.company.com/realms/company";

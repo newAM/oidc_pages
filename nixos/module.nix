@@ -17,6 +17,12 @@ in {
       type = lib.types.str;
     };
 
+    socketUser = lib.mkOption {
+      description = "User for the unix domain socket.";
+      default = null;
+      type = lib.types.nullOr lib.types.str;
+    };
+
     settings = lib.mkOption {
       type = lib.types.submodule {
         freeformType = lib.types.attrsOf settingsFormat.type;
@@ -101,6 +107,12 @@ in {
       description = cfg.settings.title + " socket";
       listenStreams = [cfg.bindPath];
       wantedBy = ["sockets.target"];
+      socketConfig = {
+        SocketMode = "0600";
+        SocketUser = cfg.socketUser;
+        RemoveOnStop = true;
+        FlushPending = true;
+      };
     };
 
     systemd.services.oidc_pages = {

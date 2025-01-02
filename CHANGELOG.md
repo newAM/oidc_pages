@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-* Added a `bindPath` option to the NixOS module.
+* Added `bindPath` and `socketUser` options to the NixOS module.
 
 ### Removed
 * Removed the `bind_addrs` configuration option.

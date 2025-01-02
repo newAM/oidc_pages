@@ -145,6 +145,8 @@ in
         services.oidc_pages = {
           enable = true;
           environmentFiles = [envFilePath];
+          # give nginx access to oidc_pages.socket
+          socketUser = config.services.nginx.user;
           settings = {
             public_url = oidcPagesFrontendUrl;
             issuer_url = "${keycloakFrontendUrl}/realms/${realm.realm}";
