@@ -11,6 +11,12 @@ in {
   options.services.oidc_pages = {
     enable = lib.mkEnableOption "OIDC Pages";
 
+    bindPath = lib.mkOption {
+      description = "Path of the unix domain socket to bind to.";
+      default = "/run/oidc_pages.sock";
+      type = lib.types.str;
+    };
+
     settings = lib.mkOption {
       type = lib.types.submodule {
         freeformType = lib.types.attrsOf settingsFormat.type;
@@ -42,12 +48,6 @@ in {
             '';
             example = "pages";
             type = lib.types.str;
-          };
-
-          bind_addrs = lib.mkOption {
-            default = ["127.0.0.1:8000"];
-            description = "Addresses to serve OIDC pages on.";
-            type = lib.types.listOf lib.types.str;
           };
 
           log_level = lib.mkOption {
@@ -97,8 +97,16 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    systemd.sockets.oidc_pages = {
+      description = cfg.settings.title + " socket";
+      listenStreams = [cfg.bindPath];
+      wantedBy = ["sockets.target"];
+    };
+
     systemd.services.oidc_pages = {
       wantedBy = ["multi-user.target"];
+      bindsTo = ["oidc_pages.socket"];
+      after = ["oidc_pages.socket"];
 
       description = cfg.settings.title;
 
@@ -109,6 +117,7 @@ in {
         Restart = "on-failure";
         RestartSec = 10;
         EnvironmentFile = cfg.environmentFiles;
+        StandardInput = "socket";
 
         # hardening
         DynamicUser = true;

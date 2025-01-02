@@ -1,4 +1,4 @@
-use std::{ffi::OsString, fs::File, io::BufReader, net::SocketAddr, path::PathBuf, str::FromStr};
+use std::{ffi::OsString, fs::File, io::BufReader, path::PathBuf, str::FromStr};
 
 use anyhow::Context;
 use openidconnect::{ClientId, ClientSecret, IssuerUrl};
@@ -11,7 +11,6 @@ struct ConfigFile {
     public_url: Url,
     issuer_url: IssuerUrl,
     client_id: ClientId,
-    bind_addrs: Vec<SocketAddr>,
     log_level: String,
     pages_path: PathBuf,
     title: String,
@@ -24,7 +23,6 @@ pub struct Config {
     pub issuer_url: IssuerUrl,
     pub client_id: ClientId,
     pub client_secret: ClientSecret,
-    pub bind_addrs: Vec<SocketAddr>,
     pub pages_path: PathBuf,
     pub title: String,
     pub assets_path: PathBuf,
@@ -91,7 +89,6 @@ impl Config {
             issuer_url: config.issuer_url,
             client_id: config.client_id,
             client_secret,
-            bind_addrs: config.bind_addrs,
             pages_path: config.pages_path,
             title: config.title,
             assets_path: config.assets_path,

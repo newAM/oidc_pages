@@ -39,7 +39,6 @@ fn deny_unknown_fields() {
                 "issuer_url": "https://sso.local/realms/testrealm",
                 "client_id": "pages",
                 "pages_path": "/tmp",
-                "bind_addrs": ["127.0.0.1:8000"],
                 "log_level": "off",
                 "title": "OIDC Pages",
                 "assets_path": "assets",
@@ -65,7 +64,6 @@ const MOCK_CONFIG: &str = r#"{
     "issuer_url": "https://sso.local/realms/testrealm",
     "client_id": "pages",
     "pages_path": "/tmp",
-    "bind_addrs": ["127.0.0.1:8000"],
     "log_level": "off",
     "title": "OIDC Pages",
     "assets_path": "assets"

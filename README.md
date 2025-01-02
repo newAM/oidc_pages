@@ -44,7 +44,6 @@ These features may or may not happen.
 * Persistent user sessions
 * Refresh tokens
 * API for uploading pages over https
-* Listening on a Unix domain socket when [axum#2479](https://github.com/tokio-rs/axum/pull/2479) is resolved
 * [Pretty error pages](https://docs.rs/tower-http/0.5.2/tower_http/services/struct.ServeDir.html#method.not_found_service)
 * Serving pages from subdomains instead of paths
 * Pictorial preview of pages
@@ -103,7 +102,6 @@ below is an example of my configuration.
   config,
   ...
 }: let
-  bindAddr = "127.0.0.1:38443";
   pagesDomain = "pages.company.com";
 in {
   # import the module, this adds the "services.oidc_pages" options
@@ -126,7 +124,6 @@ in {
       client_id = "pages";
       pages_path = "/var/www/pages";
       log_level = "info";
-      bind_addrs = [bindAddr];
     };
   };
 
@@ -136,7 +133,7 @@ in {
     enable = true;
     virtualHosts."${pagesDomain}" = {
       onlySSL = true;
-      locations."/".proxyPass = "http://${bindAddr}";
+      locations."/".proxyPass = "http://unix:${config.services.oidc_pages.bindPath}";
     };
   };
 }

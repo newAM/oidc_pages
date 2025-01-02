@@ -11,7 +11,6 @@
   envFileDir = "/nginx";
   envFilePath = "${envFileDir}/${envFileName}";
 
-  oidcPagesInternalPort = 8080;
   oidcPagesFrontendUrl = "https://${oidcPagesDomain}";
 
   keycloakInternalPort = 9080;
@@ -136,12 +135,11 @@ in
       };
 
       machine = {
+        config,
         pkgs,
         nodes,
         ...
-      }: let
-        pagesInternalAddr = "127.0.0.1:${builtins.toString oidcPagesInternalPort}";
-      in {
+      }: {
         imports = [self.nixosModules.default];
         nixpkgs.overlays = [self.overlays.default];
         services.oidc_pages = {
@@ -153,7 +151,6 @@ in
             client_id = client.clientId;
             pages_path = pagesPath;
             log_level = "info";
-            bind_addrs = [pagesInternalAddr];
           };
         };
 
@@ -166,7 +163,7 @@ in
           enable = true;
           virtualHosts."pages.local" = {
             onlySSL = true;
-            locations."/".proxyPass = "http://${pagesInternalAddr}";
+            locations."/".proxyPass = "http://unix:${config.services.oidc_pages.bindPath}";
             sslCertificateKey = ./pages.local.key.pem;
             sslCertificate = ./pages.local.cert.pem;
           };
@@ -285,12 +282,10 @@ in
       # secret exists
       machine.systemctl("restart oidc_pages.service")
       machine.wait_for_unit("oidc_pages.service")
-
-      # wait for the server to start
-      machine.wait_for_open_port(${builtins.toString oidcPagesInternalPort})
+      machine.wait_for_unit("oidc_pages.socket")
 
       # check systemd logging works
-      machine.succeed('journalctl -u oidc_pages.service --grep "Starting server"')
+      machine.wait_until_succeeds('journalctl -u oidc_pages.service --grep "Starting server"')
 
       # check favicon exists
       machine.succeed("curl -sSf ${oidcPagesFrontendUrl}/assets/favicon.svg")

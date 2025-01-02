@@ -1,14 +1,19 @@
+#![forbid(unsafe_code)]
+
 mod config;
 mod util;
 mod views;
 
-use std::{net::SocketAddr, path::PathBuf};
+use std::{
+    os::{fd::AsFd as _, unix::net::UnixListener as StdUnixListener},
+    path::PathBuf,
+};
 
 use anyhow::Context;
 use axum::{routing::get, Router};
 use config::Config;
 use openidconnect::{core::CoreProviderMetadata, RedirectUrl};
-use tokio::net::TcpListener;
+use tokio::net::UnixListener;
 use tower_http::services::ServeDir;
 use tower_sessions::{
     cookie::{self, time::Duration, SameSite},
@@ -111,10 +116,18 @@ async fn main() -> anyhow::Result<()> {
             title: config.title,
         });
 
-    let bind_addrs: &[SocketAddr] = config.bind_addrs.as_ref();
-    let listener: TcpListener = TcpListener::bind(bind_addrs)
-        .await
-        .context("Failed to bind")?;
+    let stdin_fd = std::io::stdin()
+        .as_fd()
+        .try_clone_to_owned()
+        .context("Failed to convert stdin to an owned fd")?;
+
+    let stdin_listener = StdUnixListener::from(stdin_fd);
+    stdin_listener
+        .set_nonblocking(true)
+        .context("Failed to set socket non-blocking mode")?;
+
+    let listener: UnixListener =
+        UnixListener::from_std(stdin_listener).context("Failed to bind")?;
 
     log::info!("Starting server");
 
