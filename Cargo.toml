@@ -18,7 +18,7 @@ anyhow = "1.0.86"
 askama = "0.12.1"
 axum = "0.8.1"
 jsonwebtoken = "9.3.0"
-log = "0.4.21"
+log = "0.4.25"
 openidconnect = { version = "4.0.0-rc.1", default-features = false, features = [
   "native-tls",
   "reqwest",
