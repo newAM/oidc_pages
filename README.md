@@ -9,17 +9,17 @@ OIDC Pages is designed to work seamlessly with documentation tools such as Sphin
 
 ## Features
 
-* Integrates with Keycloak
-* Respects system dark / light settings
-* NixOS module provided
-* Supports dynamically uploaded documents
-* Secure by default
+- Integrates with Keycloak
+- Respects system dark / light settings
+- NixOS module provided
+- Supports dynamically uploaded documents
+- Secure by default
 
 ### Limitations
 
-* Likely incompatible out-of-the-box with other OIDC providers
-* Sessions are stored in-memory and erased on restart
-* Not intended for serving untrusted content
+- Likely incompatible out-of-the-box with other OIDC providers
+- Sessions are stored in-memory and erased on restart
+- Not intended for serving untrusted content
 
 ### Adapting to other OIDC providers
 
@@ -37,13 +37,13 @@ the only modifications necessary should be how to obtain roles.
 
 These features may or may not happen.
 
-* Public pages
-* Persistent user sessions
-* Refresh tokens
-* API for uploading pages over https
-* [Pretty error pages](https://docs.rs/tower-http/0.6.2/tower_http/services/struct.ServeDir.html#method.not_found_service)
-* Serving pages from subdomains instead of paths
-* Pictorial preview of pages
+- Public pages
+- Persistent user sessions
+- Refresh tokens
+- API for uploading pages over https
+- [Pretty error pages](https://docs.rs/tower-http/0.6.2/tower_http/services/struct.ServeDir.html#method.not_found_service)
+- Serving pages from subdomains instead of paths
+- Pictorial preview of pages
 
 ## Security
 
@@ -51,13 +51,13 @@ Please report vulnerabilities to my git committer email.
 
 ## Technology
 
-* Language: [rust](https://www.rust-lang.org)
-* Asynchronous runtime: [tokio](https://tokio.rs)
-* Web framework: [axum](https://github.com/tokio-rs/axum)
-* Session management: [tower-sessions](https://github.com/maxcountryman/tower-sessions)
-* Templating engine: [askama](https://github.com/djc/askama)
-* OpenID Connect library: [openidconnect-rs](https://github.com/ramosbugs/openidconnect-rs)
-* Favicon provided by [Flowbite](https://flowbite.com/icons)
+- Language: [rust](https://www.rust-lang.org)
+- Asynchronous runtime: [tokio](https://tokio.rs)
+- Web framework: [axum](https://github.com/tokio-rs/axum)
+- Session management: [tower-sessions](https://github.com/maxcountryman/tower-sessions)
+- Templating engine: [askama](https://github.com/djc/askama)
+- OpenID Connect library: [openidconnect-rs](https://github.com/ramosbugs/openidconnect-rs)
+- Favicon provided by [Flowbite](https://flowbite.com/icons)
 
 ## Configuration
 
@@ -68,25 +68,25 @@ You need to bring a reverse proxy for TLS, I suggest [nginx].
 
 ### Keycloak configuration
 
-* Create and enable an OpenID Connect client in your realm
-  * Root URL: `https://pages.company.com`
-  * Home URL: `https://pages.company.com`
-  * Valid redirect URIs: `https://pages.company.com/callback`
-  * Client authentication: `On`
-  * Authorization: `Off`
-  * Authentication flow: `Standard flow` (all others disabled)
-* Create roles for the newly created client
-  * The `admin` role can view all pages
-  * All other roles grant permissions to pages in a directory matching the role name
-* Create a dedicated audience mapper for the newly created client
-  * Navigate to **Clients** -> `<client_id>` -> **Client scopes**
+- Create and enable an OpenID Connect client in your realm
+  - Root URL: `https://pages.company.com`
+  - Home URL: `https://pages.company.com`
+  - Valid redirect URIs: `https://pages.company.com/callback`
+  - Client authentication: `On`
+  - Authorization: `Off`
+  - Authentication flow: `Standard flow` (all others disabled)
+- Create roles for the newly created client
+  - The `admin` role can view all pages
+  - All other roles grant permissions to pages in a directory matching the role name
+- Create a dedicated audience mapper for the newly created client
+  - Navigate to **Clients** -> `<client_id>` -> **Client scopes**
     -> `<client_id>-dedicated` -> **Configure a new mapper** -> **Audience**
-  * Name: `aud-mapper-<client_id>`
-  * Included Client Audience: `<client_id>`
-  * Add to ID token: `On`
-  * Add to access token: `On`
-  * Add to lightweight access token: `Off`
-  * Add to token introspection: `On`
+  - Name: `aud-mapper-<client_id>`
+  - Included Client Audience: `<client_id>`
+  - Add to ID token: `On`
+  - Add to access token: `On`
+  - Add to lightweight access token: `Off`
+  - Add to token introspection: `On`
 
 ### NixOS configuration
 

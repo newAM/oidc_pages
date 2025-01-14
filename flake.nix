@@ -6,6 +6,9 @@
     advisory-db.flake = false;
 
     crane.url = "github:ipetkov/crane";
+
+    treefmt.url = "github:numtide/treefmt-nix";
+    treefmt.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -13,6 +16,7 @@
     nixpkgs,
     advisory-db,
     crane,
+    treefmt,
   }: let
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
     craneLib = crane.mkLib pkgs;
@@ -43,11 +47,11 @@
         cp -r ${./assets}/* $out/share/oidc_pages/assets
       '';
 
-      meta = with nixpkgs.lib; {
+      meta = {
         description = "Serve static HTML with OIDC for authorization and authentication";
         repository = "https://github.com/newAM/oidc_pages";
-        license = [licenses.agpl3Plus];
-        maintainers = with maintainers; [newam];
+        license = [nixpkgs.lib.licenses.agpl3Plus];
+        maintainers = [nixpkgs.lib.maintainers.newam];
         mainProgram = "oidc_pages";
       };
     };
@@ -55,6 +59,16 @@
     cargoArtifacts = craneLib.buildDepsOnly commonArgs;
 
     nixSrc = nixpkgs.lib.sources.sourceFilesBySuffices self [".nix"];
+
+    treefmtEval = treefmt.lib.evalModule pkgs {
+      projectRootFile = "flake.nix";
+      programs = {
+        alejandra.enable = true;
+        prettier.enable = true;
+        rustfmt.enable = true;
+        taplo.enable = true;
+      };
+    };
   in {
     devShells.x86_64-linux.default = pkgs.mkShell {
       inherit (commonArgs) nativeBuildInputs buildInputs;
@@ -75,8 +89,12 @@
       }
     );
 
+    formatter.x86_64-linux = treefmtEval.config.build.wrapper;
+
     checks.x86_64-linux = {
       pkgs = self.packages.x86_64-linux.default;
+
+      formatting = treefmtEval.config.build.check self;
 
       audit = craneLib.cargoAudit (nixpkgs.lib.recursiveUpdate commonArgs {
         inherit advisory-db;
@@ -88,13 +106,6 @@
           cargoClippyExtraArgs = "--all-targets -- --deny warnings";
           inherit cargoArtifacts;
         });
-
-      rustfmt = craneLib.cargoFmt {inherit (commonArgs) src;};
-
-      alejandra = pkgs.runCommand "alejandra" {} ''
-        ${pkgs.alejandra}/bin/alejandra --check ${nixSrc}
-        touch $out
-      '';
 
       basic = pkgs.callPackage ./nixos/tests/basic.nix {inherit self;};
     };

@@ -1,35 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="description" content="{{ title }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="{{ title }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>{{ title }}</title>
+    <title>{{ title }}</title>
 
-  <link rel="stylesheet" href="assets/style.css">
-  <link rel="icon" href="assets/favicon.svg">
-</head>
-<body>
-<h1>{{ title }}</h1>
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="icon" href="assets/favicon.svg" />
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
 
-{% if let Some(user) = user %}
-  {% if pages.len() > 0 %}
+    {% if let Some(user) = user %} {% if pages.len() > 0 %}
     <ul>
       {% for page in pages %}
-        <li><a href="/p/{{ page.dir }}/index.html">{{ page.title }}</a></li>
+      <li><a href="/p/{{ page.dir }}/index.html">{{ page.title }}</a></li>
       {% endfor %}
     </ul>
-  {% else %}
+    {% else %}
     <p>No pages to display</p>
-  {% endif %}
+    {% endif %}
 
-  <p>You are signed in as {{ user.email }}.</p>
-  <a href="/logout">Logout</a>
-{% else %}
-  <a href="/login">Login to view documents...</a>
-{% endif %}
+    <p>You are signed in as {{ user.email }}.</p>
+    <a href="/logout">Logout</a>
+    {% else %}
+    <a href="/login">Login to view documents...</a>
+    {% endif %}
 
-<p>Powered by <a href="https://github.com/newAM/oidc_pages">OIDC Pages</a>, licensed under the <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html">AGPL-3.0-or-later</a></p>
-</body>
+    <p>
+      Powered by <a href="https://github.com/newAM/oidc_pages">OIDC Pages</a>,
+      licensed under the
+      <a href="https://spdx.org/licenses/AGPL-3.0-or-later.html"
+        >AGPL-3.0-or-later</a
+      >
+    </p>
+  </body>
 </html>
