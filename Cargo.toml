@@ -7,7 +7,11 @@ repository = "https://github.com/newAM/oidc_pages"
 license = "AGPL-3.0-or-later"
 description = "Serve static HTML with OIDC for authorization and authentication"
 keywords = ["oidc", "pages"]
-categories = ["visualization", "web-programming::http-server", "development-tools"]
+categories = [
+  "visualization",
+  "web-programming::http-server",
+  "development-tools",
+]
 
 [dependencies]
 anyhow = "1.0.86"
@@ -15,7 +19,11 @@ askama = "0.12.1"
 axum = "0.8.1"
 jsonwebtoken = "9.3.0"
 log = "0.4.21"
-openidconnect = { version = "4.0.0-rc.1", default-features = false, features = ["native-tls", "reqwest", "timing-resistant-secret-traits"] }
+openidconnect = { version = "4.0.0-rc.1", default-features = false, features = [
+  "native-tls",
+  "reqwest",
+  "timing-resistant-secret-traits",
+] }
 scraper = "0.22.0"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
@@ -24,7 +32,11 @@ systemd-journal-logger = "2.1.1"
 tokio = { version = "1.38.0", features = ["full"] }
 tower = { version = "0.5.0", features = ["util"] }
 tower-http = { version = "0.6.0", default-features = false, features = ["fs"] }
-tower-sessions = { version = "0.14.0", default-features = false, features = ["axum-core", "private", "memory-store"] }
+tower-sessions = { version = "0.14.0", default-features = false, features = [
+  "axum-core",
+  "private",
+  "memory-store",
+] }
 url = "2.5.2"
 
 [dev-dependencies]
