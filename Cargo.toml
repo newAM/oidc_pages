@@ -19,7 +19,7 @@ askama = "0.12.1"
 axum = "0.8.1"
 jsonwebtoken = "9.3.0"
 log = "0.4.21"
-openidconnect = { version = "4.0.0-rc.1", default-features = false, features = [
+openidconnect = { version = "4", default-features = false, features = [
   "native-tls",
   "reqwest",
   "timing-resistant-secret-traits",
