@@ -16,7 +16,7 @@ categories = [
 [dependencies]
 anyhow = "1.0.86"
 askama = "0.12.1"
-axum = "0.8.1"
+axum = "0.8.2"
 jsonwebtoken = "9.3.0"
 log = "0.4.21"
 openidconnect = { version = "4", default-features = false, features = [
