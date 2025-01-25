@@ -58,8 +58,6 @@
 
     cargoArtifacts = craneLib.buildDepsOnly commonArgs;
 
-    nixSrc = nixpkgs.lib.sources.sourceFilesBySuffices self [".nix"];
-
     treefmtEval = treefmt.lib.evalModule pkgs {
       projectRootFile = "flake.nix";
       programs = {
