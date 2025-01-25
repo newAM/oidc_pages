@@ -47,6 +47,10 @@
         cp -r ${./assets}/* $out/share/oidc_pages/assets
       '';
 
+      preCheck = ''
+        export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+      '';
+
       meta = {
         description = "Serve static HTML with OIDC for authorization and authentication";
         repository = "https://github.com/newAM/oidc_pages";
