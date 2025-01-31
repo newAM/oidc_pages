@@ -109,7 +109,7 @@
           inherit cargoArtifacts;
         });
 
-      basic = pkgs.callPackage ./nixos/tests/basic.nix {inherit self;};
+      keycloak = pkgs.callPackage ./nixos/tests/keycloak.nix {inherit self;};
     };
 
     overlays.default = final: prev: {
