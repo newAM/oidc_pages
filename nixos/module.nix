@@ -79,6 +79,28 @@ in {
             type = lib.types.path;
             default = "${pkgs.oidc_pages}/share/oidc_pages/assets";
           };
+
+          additional_scopes = lib.mkOption {
+            description = ''
+              Additional scopes to request from the OIDC server.
+
+              These are in addition to "openid", "email", and "profile".
+            '';
+            type = lib.types.listOf lib.types.str;
+            default = [];
+            example = ["roles"];
+          };
+
+          roles_path = lib.mkOption {
+            description = ''
+              Path within the access token or user info claims to a list
+              of strings containing roles.
+
+              Roles grant permission to access pages of the same name.
+            '';
+            type = lib.types.listOf lib.types.str;
+            example = ["resource_access" "client_id" "roles"];
+          };
         };
       };
     };

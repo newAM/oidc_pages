@@ -69,7 +69,7 @@
   rolesDataJson = pkgs.writeText "roles-data.json" (builtins.toJSON roles);
 in
   pkgs.nixosTest {
-    name = "basic";
+    name = "keycloak";
 
     nodes = {
       keycloak = {
@@ -153,6 +153,8 @@ in
             client_id = client.clientId;
             pages_path = pagesPath;
             log_level = "info";
+            additional_scopes = ["roles"];
+            roles_path = ["resource_access" client.clientId "roles"];
           };
         };
 
