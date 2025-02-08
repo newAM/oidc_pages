@@ -23,12 +23,13 @@ OIDC Pages is designed to work seamlessly with documentation tools such as Sphin
 
 ### Adapting to other OIDC providers
 
-1. The OIDC specification doesn't define a type for the access token.
-   Your OIDC provider must use a JSON web token which is the de-facto standard.
-2. The OIDC specification doesn't provide a standard way to read roles.
-   The JSON path to the roles is set with `roles_path` in the configuration.
-   This typically requires getting your hands dirty and reading the responses
-   of your OIDC provider with a working application.
+1. **Access Token Type**
+   - The OIDC specification doesn't define a type for the access token.
+   - Your OIDC provider must use a JSON web token which is the de-facto standard.
+2. **Roles Path Configuration**
+   - The OIDC specification doesn't provide a standard way to read roles.
+   - To configure the path to the roles in the token, use the `roles_path` setting in your configuration file.
+   - Determining the appropriate value for `roles_path` typically involves inspecting the return data from your OIDC provider. This can be done by examining the responses from a working application.
 
 ### Planned features
 
@@ -104,11 +105,11 @@ kanidm group create 'oidc_pages_users'
 kanidm group create 'oidc_pages_pagename'
 ```
 
-Setup the claim-map:
+Setup the claim map:
 
 ```bash
-kanidm system oauth2 update-claim-map-join 'pages' 'pages_role' array
-kanidm system oauth2 update-claim-map 'pages' 'pages_role' 'oidc_pages_pagename' 'pagename'
+kanidm system oauth2 update-claim-map-join 'pages' 'pages_roles' array
+kanidm system oauth2 update-claim-map 'pages' 'pages_roles' 'oidc_pages_pagename' 'pagename'
 ```
 
 Add users to the groups:
