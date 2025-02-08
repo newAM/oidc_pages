@@ -23,7 +23,7 @@
     <p>No pages to display</p>
     {% endif %}
 
-    <p>You are signed in as {{ user.email }}.</p>
+    <p>You are signed in as {{ user.preferred_username }}.</p>
     <a href="/logout">Logout</a>
     {% else %}
     <a href="/login">Login to view documents...</a>

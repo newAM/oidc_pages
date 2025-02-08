@@ -54,6 +54,8 @@ pub struct State {
     metadata: CoreProviderMetadata,
     pages_path: PathBuf,
     title: String,
+    additional_scopes: Vec<openidconnect::Scope>,
+    roles_path: Vec<String>,
 }
 
 #[tokio::main]
@@ -114,6 +116,8 @@ async fn main() -> anyhow::Result<()> {
             metadata,
             pages_path: config.pages_path,
             title: config.title,
+            additional_scopes: config.additional_scopes,
+            roles_path: config.roles_path,
         });
 
     let stdin_fd = std::io::stdin()

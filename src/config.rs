@@ -15,6 +15,8 @@ struct ConfigFile {
     pages_path: PathBuf,
     title: String,
     assets_path: PathBuf,
+    additional_scopes: Vec<openidconnect::Scope>,
+    roles_path: Vec<String>,
 }
 
 #[derive(Clone)]
@@ -26,6 +28,8 @@ pub struct Config {
     pub pages_path: PathBuf,
     pub title: String,
     pub assets_path: PathBuf,
+    pub additional_scopes: Vec<openidconnect::Scope>,
+    pub roles_path: Vec<String>,
 }
 
 impl Config {
@@ -92,6 +96,8 @@ impl Config {
             pages_path: config.pages_path,
             title: config.title,
             assets_path: config.assets_path,
+            additional_scopes: config.additional_scopes,
+            roles_path: config.roles_path,
         })
     }
 }

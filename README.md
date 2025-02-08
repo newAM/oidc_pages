@@ -9,7 +9,7 @@ OIDC Pages is designed to work seamlessly with documentation tools such as Sphin
 
 ## Features
 
-- Integrates with Keycloak
+- Works with keycloak or kanidm
 - Respects system dark / light settings
 - NixOS module provided
 - Supports dynamically uploaded documents
@@ -23,15 +23,12 @@ OIDC Pages is designed to work seamlessly with documentation tools such as Sphin
 
 ### Adapting to other OIDC providers
 
-There are two assumptions that make this keycloak-specific.
-
-1. The OIDC specification doesn't define a type for the access token,
-   keycloak uses a JSON web token which is the de-facto standard.
+1. The OIDC specification doesn't define a type for the access token.
+   Your OIDC provider must use a JSON web token which is the de-facto standard.
 2. The OIDC specification doesn't provide a standard way to read roles.
-   Roles are assumed to be under `resource_access` -> `<client_id>` -> `roles`.
-
-Majority of OIDC providers use a JWT for the access token,
-the only modifications necessary should be how to obtain roles.
+   The JSON path to the roles is set with `roles_path` in the configuration.
+   This typically requires getting your hands dirty and reading the responses
+   of your OIDC provider with a working application.
 
 ### Planned features
 
@@ -88,6 +85,40 @@ You need to bring a reverse proxy for TLS, I suggest [nginx].
   - Add to lightweight access token: `Off`
   - Add to token introspection: `On`
 
+### Kanidm configuration
+
+Create the OAuth2 client:
+
+```bash
+kanidm system oauth2 create pages "pages.domain.name" https://pages.domain.name
+kanidm system oauth2 update-scope-map pages oidc_pages_users email openid profile groups
+kanidm system oauth2 get pages
+kanidm system oauth2 show-basic-secret pages
+<SECRET>
+```
+
+Create permission groups:
+
+```bash
+kanidm group create 'oidc_pages_users'
+kanidm group create 'oidc_pages_pagename'
+```
+
+Setup the claim-map:
+
+```bash
+kanidm system oauth2 update-claim-map-join 'pages' 'pages_role' array
+kanidm system oauth2 update-claim-map 'pages' 'pages_role' 'oidc_pages_pagename' 'pagename'
+```
+
+Add users to the groups:
+
+```bash
+kanidm person update myusername --legalname "Personal Name" --mail "user@example.com"
+kanidm group add-members 'oidc_pages_users' 'myusername'
+kanidm group add-members 'oidc_pages_pagename' 'myusername'
+```
+
 ### NixOS configuration
 
 Reference `nixos/module.nix` for a complete list of options,
@@ -119,10 +150,21 @@ in {
     socketUser = config.services.nginx.user;
     settings = {
       public_url = "https://${pagesDomain}";
-      issuer_url = "https://sso.company.com/realms/company";
       client_id = "pages";
       pages_path = "/var/www/pages";
       log_level = "info";
+      # provider specific:
+      # - keycloak: "https://sso.company.com/realms/company"
+      # - kanidm: "https://sso.company.com/oauth2/openid/${client_id}"
+      issuer_url = "";
+      # provider specific:
+      # - keycloak: ["roles"]
+      # - kanidm: []
+      additional_scopes = [];
+      # provider specific:
+      # - keycloak: ["resource_access" client_id "roles"]
+      # - kanidm: ["pages_roles"]
+      roles_path = [];
     };
   };
 

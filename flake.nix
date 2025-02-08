@@ -110,6 +110,8 @@
         });
 
       keycloak = pkgs.callPackage ./nixos/tests/keycloak.nix {inherit self;};
+
+      kanidm = pkgs.callPackage ./nixos/tests/kanidm.nix {inherit self;};
     };
 
     overlays.default = final: prev: {

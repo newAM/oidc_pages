@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use crate::{
-    util::{self, page_title, to_string_array, UnwrapInfallible},
+    util::{self, page_title, to_string_array, value_at_path, UnwrapInfallible},
     State,
 };
 use anyhow::Context;
@@ -21,7 +21,7 @@ use url::Url;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
-    email: String,
+    preferred_username: String,
     roles: Vec<String>,
 }
 
@@ -217,7 +217,7 @@ pub async fn login(
             openidconnect::CsrfToken::new_random,
             openidconnect::Nonce::new_random,
         )
-        .add_scope(openidconnect::Scope::new("roles".to_string()))
+        .add_scopes(state.additional_scopes.clone())
         .set_pkce_challenge(pkce_challenge)
         .url();
 
@@ -248,11 +248,18 @@ pub async fn logout(session: Session) -> axum::response::Response {
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct CallbackParams {
-    iss: Url,
+    iss: Option<Url>,
     state: String,
     #[serde(flatten)]
     data: CallbackData,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+struct AnyClaims {
+    #[serde(flatten)]
+    any: serde_json::value::Value,
+}
+impl openidconnect::AdditionalClaims for AnyClaims {}
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(untagged)]
@@ -263,7 +270,7 @@ pub enum CallbackData {
     },
     Code {
         code: String,
-        session_state: String,
+        session_state: Option<String>,
     },
 }
 
@@ -368,10 +375,10 @@ async fn fallible_callback(
     let kid: String = jwt_hdr.kid.context("Access token is missing kid field")?;
 
     let keys_get = http_client
-        .get(state.metadata.jwks_uri().url().clone())
+        .get(state.metadata.jwks_uri().url().as_ref())
         .send()
         .await
-        .context("Failed to requesting OIDC JWKs")?
+        .context("Failed to request OIDC JWKs")?
         .text()
         .await
         .context("Failed to read OIDC JWKs")?;
@@ -401,28 +408,41 @@ async fn fallible_callback(
     )
     .context("Failed to validate access token")?;
 
-    let email: String = claims
-        .email()
-        .map(|email| email.as_str())
-        .context("OIDC server did not provide email address")?
+    let preferred_username: String = claims
+        .preferred_username()
+        .map(|username| username.as_str())
+        .context("OIDC server did not provide preferred_username")?
         .to_string();
 
-    let maybe_roles: Option<&serde_json::Value> = access_token
-        .claims
-        .get("resource_access")
-        .and_then(|ra| ra.get(client_id))
-        .and_then(|cid| cid.get("roles"));
+    let maybe_roles_at: Option<&serde_json::Value> =
+        value_at_path(&access_token.claims, &state.roles_path);
 
-    let roles: Vec<String> = if let Some(roles) = maybe_roles {
-        let roles_json: &Vec<serde_json::Value> = roles
-            .as_array()
-            .context("roles in access token is not an array")?;
-        to_string_array(roles_json).context("roles in access token is not an array of strings")?
+    let roles: Vec<String> = if maybe_roles_at.is_none() {
+        let userinfo_claims: openidconnect::UserInfoClaims<
+            AnyClaims,
+            openidconnect::core::CoreGenderClaim,
+        > = state
+            .client
+            .user_info(token_response.access_token().to_owned(), None)
+            .context("No user info endpoint")?
+            .request_async(&http_client)
+            .await
+            .context("Failed to request user info")?;
+
+        value_at_path(
+            &(userinfo_claims.additional_claims().any),
+            &state.roles_path,
+        )
+        .and_then(to_string_array)
+        .unwrap_or_default()
     } else {
-        vec![]
+        maybe_roles_at.and_then(to_string_array).unwrap_or_default()
     };
 
-    let user: User = User { email, roles };
+    let user: User = User {
+        preferred_username,
+        roles,
+    };
 
     session
         .insert(USER_KEY, user.clone())

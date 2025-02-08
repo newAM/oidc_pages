@@ -5,3 +5,4 @@ roots/
 .direnv/
 result
 *.txt
+.nixos-test-history

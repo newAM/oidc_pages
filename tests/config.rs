@@ -42,6 +42,8 @@ fn deny_unknown_fields() {
                 "log_level": "off",
                 "title": "OIDC Pages",
                 "assets_path": "assets",
+                "additional_scopes": [],
+                "roles_path": [],
                 "some_extra_field": "hello world"
             }"#
             .as_bytes(),
@@ -66,7 +68,9 @@ const MOCK_CONFIG: &str = r#"{
     "pages_path": "/tmp",
     "log_level": "off",
     "title": "OIDC Pages",
-    "assets_path": "assets"
+    "assets_path": "assets",
+    "additional_scopes": [],
+    "roles_path": []
 }"#;
 
 #[test]

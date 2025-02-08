@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `bindPath` and `socketUser` options to the NixOS module.
+- Added support for Kanidm
+  - Added a `additional_scopes` option to the NixOS module.
+  - Added a `roles_path` option to the NixOS module.
 
 ### Removed
 
