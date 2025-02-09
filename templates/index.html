@@ -21,9 +21,9 @@
     </ul>
     {% else %}
     <p>No pages to display</p>
+    {% endif %} {% if let Some(username) = user.username %}
+    <p>You are signed in as {{ username }}.</p>
     {% endif %}
-
-    <p>You are signed in as {{ user.preferred_username }}.</p>
     <a href="/logout">Logout</a>
     {% else %}
     <a href="/login">Login to view documents...</a>

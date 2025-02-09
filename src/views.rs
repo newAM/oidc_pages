@@ -21,7 +21,7 @@ use url::Url;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
-    preferred_username: String,
+    username: Option<String>,
     roles: Vec<String>,
 }
 
@@ -408,11 +408,10 @@ async fn fallible_callback(
     )
     .context("Failed to validate access token")?;
 
-    let preferred_username: String = claims
+    let username: Option<String> = claims
         .preferred_username()
-        .map(|username| username.as_str())
-        .context("OIDC server did not provide preferred_username")?
-        .to_string();
+        .map(|username| username.to_string())
+        .or_else(|| claims.email().map(|email| email.to_string()));
 
     let maybe_roles_at: Option<&serde_json::Value> =
         value_at_path(&access_token.claims, &state.roles_path);
@@ -439,10 +438,7 @@ async fn fallible_callback(
         maybe_roles_at.and_then(to_string_array).unwrap_or_default()
     };
 
-    let user: User = User {
-        preferred_username,
-        roles,
-    };
+    let user: User = User { username, roles };
 
     session
         .insert(USER_KEY, user.clone())
