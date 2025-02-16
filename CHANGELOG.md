@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Removed
 
-- Added a configuration option `client_secret_file_path` to pass the client secret by file path instead of environment variable.
+- Removed support for OIDC basic secrets, please use PKCE instead.
+  - This aligns with [OAuth 2.0 best practices].
+  - Removed `environmentFiles` module option.
+
+[OAuth 2.0 best practices]: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics-16#section-2.1.1
 
 ## [2.0.0] - 2025-02-08
 
