@@ -9,10 +9,7 @@
 
   oidcPagesFrontendUrl = "https://${oidcPagesDomain}";
   oidcPagesClientId = "oidc_pages";
-  oidcPagesClientSecret = "secret123";
-  oidcPagesEnv = pkgs.writeText "oidc_pages_env" ''
-    OIDC_PAGES_CLIENT_SECRET=${oidcPagesClientSecret}
-  '';
+  oidcPagesClientSecretFile = pkgs.writeText "oidc_pages_client_secret" "secret123";
 
   kanidmPort = 8443;
   kanidmFrontendUrl = "https://${kanidmDomain}:${toString kanidmPort}";
@@ -84,7 +81,7 @@ in
               public = false;
               enableLegacyCrypto = false;
               preferShortUsername = true;
-              basicSecretFile = pkgs.writeText "oidc_pages_client_secret" oidcPagesClientSecret;
+              basicSecretFile = oidcPagesClientSecretFile;
               originUrl = "${oidcPagesFrontendUrl}/callback";
               originLanding = "${oidcPagesFrontendUrl}";
               scopeMaps.${oidcPagesUserGroup} = [
@@ -125,13 +122,13 @@ in
         nixpkgs.overlays = [self.overlays.default];
         services.oidc_pages = {
           enable = true;
-          environmentFiles = [oidcPagesEnv];
           # give nginx access to oidc_pages.socket
           socketUser = config.services.nginx.user;
           settings = {
             public_url = oidcPagesFrontendUrl;
             issuer_url = "${kanidmFrontendUrl}/oauth2/openid/${oidcPagesClientId}";
             client_id = oidcPagesClientId;
+            client_secret_file_path = oidcPagesClientSecretFile;
             pages_path = pagesPath;
             log_level = "info";
             roles_path = [oidcPagesRoleGroup];

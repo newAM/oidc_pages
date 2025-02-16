@@ -146,6 +146,8 @@ in {
   # reference module for descriptions of configuration
   services.oidc_pages = {
     enable = true;
+    # contains
+    # OIDC_PAGES_CLIENT_SECRET=client_secret_goes_here
     environmentFiles = [config.sops.secrets.oidc_pages.path];
     # give nginx access to oidc_pages.socket
     socketUser = config.services.nginx.user;

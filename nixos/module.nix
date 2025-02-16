@@ -56,6 +56,15 @@ in {
             type = lib.types.str;
           };
 
+          client_secret_file_path = lib.mkOption {
+            description = ''
+              Path to a file containing the OIDC client secret.
+            '';
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+            example = "/run/secrets/oidc_pages_client_secret";
+          };
+
           log_level = lib.mkOption {
             default = "warn";
             description = "Logging level.";
@@ -107,6 +116,7 @@ in {
 
     environmentFiles = lib.mkOption {
       type = lib.types.listOf lib.types.path;
+      default = [];
       description = ''
         Environment file as defined in {manpage}`systemd.exec(5)`.
 

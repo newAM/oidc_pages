@@ -1,4 +1,10 @@
-use std::{ffi::OsString, fs::File, io::BufReader, path::PathBuf, str::FromStr};
+use std::{
+    ffi::OsString,
+    fs::{self, File},
+    io::BufReader,
+    path::PathBuf,
+    str::FromStr,
+};
 
 use anyhow::Context;
 use openidconnect::{ClientId, ClientSecret, IssuerUrl};
@@ -11,6 +17,7 @@ struct ConfigFile {
     public_url: Url,
     issuer_url: IssuerUrl,
     client_id: ClientId,
+    client_secret_file_path: Option<String>,
     log_level: String,
     pages_path: PathBuf,
     title: String,
@@ -76,15 +83,21 @@ impl Config {
 
         log::debug!("Hello world");
 
-        const CLIENT_SECRET_ENV_VAR: &str = "OIDC_PAGES_CLIENT_SECRET";
+        let client_secret_str: String = if let Some(client_secret_file_path) =
+            config.client_secret_file_path
+        {
+            fs::read_to_string(&client_secret_file_path).with_context(|| {
+                format!("Failed to read client secret from '{client_secret_file_path}'")
+            })?
+        } else {
+            const CLIENT_SECRET_ENV_VAR: &str = "OIDC_PAGES_CLIENT_SECRET";
 
-        let client_secret_str: String =
             std::env::var(CLIENT_SECRET_ENV_VAR).with_context(|| {
-                format!(
-                    "Failed to read client secret from environment variable '{}'",
-                    CLIENT_SECRET_ENV_VAR
-                )
-            })?;
+                    format!(
+                        "Failed to read client secret from environment variable '{CLIENT_SECRET_ENV_VAR}'"
+                    )
+                })?
+        };
 
         let client_secret: ClientSecret = ClientSecret::new(client_secret_str);
 
