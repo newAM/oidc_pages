@@ -7,6 +7,10 @@
   keycloakDomain = "keycloak.local";
   oidcPagesDomain = "pages.local";
 
+  envFileName = "oidc_pages_test_env";
+  envFileDir = "/nginx";
+  envFilePath = "${envFileDir}/${envFileName}";
+
   oidcPagesFrontendUrl = "https://${oidcPagesDomain}";
 
   keycloakInternalPort = 9080;
@@ -23,7 +27,6 @@
     webOrigins = [oidcPagesFrontendUrl];
     rootUrl = oidcPagesFrontendUrl;
     baseUrl = oidcPagesFrontendUrl;
-    publicClient = true;
   };
 
   user = {
@@ -90,6 +93,13 @@ in
 
         services.nginx = {
           enable = true;
+          # using nginx to transfer the client secret file from keycloak to the
+          # OIDC pages VM
+          virtualHosts."${tmpDomain}" = {
+            root = envFileDir;
+            extraConfig = "autoindex on;";
+          };
+
           virtualHosts."${keycloakDomain}" = {
             onlySSL = true;
             locations."/".proxyPass = "http://127.0.0.1:${builtins.toString keycloakInternalPort}";
@@ -134,6 +144,7 @@ in
         nixpkgs.overlays = [self.overlays.default];
         services.oidc_pages = {
           enable = true;
+          environmentFiles = [envFilePath];
           # give nginx access to oidc_pages.socket
           socketUser = config.services.nginx.user;
           settings = {
@@ -210,6 +221,11 @@ in
       client_id: str = client_data[0]["id"]
       print(f"{client_id=}")
 
+      # generate and save the client secret
+      keycloak.succeed(
+          f"curl -sSf -H @admin_auth_header -X POST '${keycloakFrontendUrl}/admin/realms/${realm.realm}/clients/{client_id}/client-secret' | jq -r .value >client_secret",
+      )
+
       # get user id
       user_data_resp: str = keycloak.succeed(
           "curl -sSf -H @admin_auth_header '${keycloakFrontendUrl}/admin/realms/${realm.realm}/users?username=${user.username}'",
@@ -237,6 +253,24 @@ in
       keycloak.succeed(
           f"curl -vvvv -sSf -H @admin_auth_header -X POST -H 'Content-Type: application/json' -d '{role_post}' '${keycloakFrontendUrl}/admin/realms/${realm.realm}/users/{user_id}/role-mappings/clients/{client_id}'"
       )
+
+      # put the environment file into a path to be served by nginx
+      keycloak.succeed(
+          "mkdir -p ${envFileDir}",
+          "chmod 777 -R ${envFileDir}",
+          "echo -n OIDC_PAGES_CLIENT_SECRET= > ${envFilePath}",
+          "cat client_secret >> ${envFilePath}",
+          "cp client_secret ${envFileDir}",
+      )
+
+      # grab the client secret from keycloak
+      machine.succeed(
+          "mkdir -p ${envFileDir}",
+          "chmod 777 -R ${envFileDir}",
+      )
+      machine.wait_until_succeeds("curl http://${tmpDomain}/${envFileName} -o ${envFilePath}")
+      machine.succeed("curl http://${tmpDomain}/client_secret -o client_secret")
+      print(machine.succeed("cat ${envFilePath}"))
 
       # create some pages
       page_content: str = "<p>Hello World from {name}</p>"

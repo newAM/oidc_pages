@@ -56,6 +56,15 @@ in {
             type = lib.types.str;
           };
 
+          client_secret_file_path = lib.mkOption {
+            description = ''
+              Path to a file containing the OIDC client secret.
+            '';
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+            example = "/run/secrets/oidc_pages_client_secret";
+          };
+
           log_level = lib.mkOption {
             default = "warn";
             description = "Logging level.";
@@ -104,6 +113,25 @@ in {
         };
       };
     };
+
+    environmentFiles = lib.mkOption {
+      type = lib.types.listOf lib.types.path;
+      default = [];
+      description = ''
+        Environment file as defined in {manpage}`systemd.exec(5)`.
+
+        OIDC pages uses the following environment variables for passing secrets:
+
+        * `OIDC_PAGES_CLIENT_SECRET`: OIDC client secret provided by your OIDC provider
+
+        Example contents:
+
+        ```
+        OIDC_PAGES_CLIENT_SECRET=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        ```
+      '';
+      example = ["/run/keys/oidc_pages.env"];
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -132,6 +160,7 @@ in {
         ExecStart = "${pkgs.oidc_pages}/bin/oidc_pages ${configurationFile}";
         Restart = "on-failure";
         RestartSec = 10;
+        EnvironmentFile = cfg.environmentFiles;
         StandardInput = "socket";
 
         # hardening

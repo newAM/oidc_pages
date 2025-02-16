@@ -74,12 +74,27 @@ const MOCK_CONFIG: &str = r#"{
 }"#;
 
 #[test]
+fn no_client_secret() {
+    let mut config_file: NamedTempFile = NamedTempFile::new().unwrap();
+    config_file.write_all(MOCK_CONFIG.as_bytes()).unwrap();
+
+    main_bin().args([config_file.path()]).assert().stderr(
+        r#"Error: Failed to read client secret from environment variable 'OIDC_PAGES_CLIENT_SECRET'
+
+Caused by:
+    environment variable not found
+"#,
+    );
+}
+
+#[test]
 fn valid() {
     let mut config_file: NamedTempFile = NamedTempFile::new().unwrap();
     config_file.write_all(MOCK_CONFIG.as_bytes()).unwrap();
 
     main_bin()
         .args([config_file.path()])
+        .env("OIDC_PAGES_CLIENT_SECRET", "AAA")
         .assert()
         .stderr(predicates::str::starts_with(
             "Error: Failed to discover OpenID provider",

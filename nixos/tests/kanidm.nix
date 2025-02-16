@@ -9,6 +9,7 @@
 
   oidcPagesFrontendUrl = "https://${oidcPagesDomain}";
   oidcPagesClientId = "oidc_pages";
+  oidcPagesClientSecretFile = pkgs.writeText "oidc_pages_client_secret" "secret123";
 
   kanidmPort = 8443;
   kanidmFrontendUrl = "https://${kanidmDomain}:${toString kanidmPort}";
@@ -77,9 +78,10 @@ in
             enable = true;
             systems.oauth2.${oidcPagesClientId} = {
               displayName = "OIDC Pages";
-              public = true;
+              public = false;
               enableLegacyCrypto = false;
               preferShortUsername = true;
+              basicSecretFile = oidcPagesClientSecretFile;
               originUrl = "${oidcPagesFrontendUrl}/callback";
               originLanding = "${oidcPagesFrontendUrl}";
               scopeMaps.${oidcPagesUserGroup} = [
@@ -124,6 +126,7 @@ in
             public_url = oidcPagesFrontendUrl;
             issuer_url = "${kanidmFrontendUrl}/oauth2/openid/${oidcPagesClientId}";
             client_id = oidcPagesClientId;
+            client_secret_file_path = oidcPagesClientSecretFile;
             pages_path = pagesPath;
             log_level = "info";
             roles_path = [oidcPagesRoleMap];

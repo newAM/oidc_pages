@@ -1,7 +1,13 @@
-use std::{ffi::OsString, fs::File, io::BufReader, path::PathBuf, str::FromStr};
+use std::{
+    ffi::OsString,
+    fs::{self, File},
+    io::BufReader,
+    path::PathBuf,
+    str::FromStr,
+};
 
 use anyhow::Context;
-use openidconnect::{ClientId, IssuerUrl};
+use openidconnect::{ClientId, ClientSecret, IssuerUrl};
 use serde::Deserialize;
 use url::Url;
 
@@ -11,6 +17,7 @@ struct ConfigFile {
     public_url: Url,
     issuer_url: IssuerUrl,
     client_id: ClientId,
+    client_secret_file_path: Option<String>,
     log_level: String,
     pages_path: PathBuf,
     title: String,
@@ -24,6 +31,7 @@ pub struct Config {
     pub public_url: Url,
     pub issuer_url: IssuerUrl,
     pub client_id: ClientId,
+    pub client_secret: ClientSecret,
     pub pages_path: PathBuf,
     pub title: String,
     pub assets_path: PathBuf,
@@ -75,10 +83,29 @@ impl Config {
 
         log::debug!("Hello world");
 
+        let client_secret_str: String = if let Some(client_secret_file_path) =
+            config.client_secret_file_path
+        {
+            fs::read_to_string(&client_secret_file_path).with_context(|| {
+                format!("Failed to read client secret from '{client_secret_file_path}'")
+            })?
+        } else {
+            const CLIENT_SECRET_ENV_VAR: &str = "OIDC_PAGES_CLIENT_SECRET";
+
+            std::env::var(CLIENT_SECRET_ENV_VAR).with_context(|| {
+                    format!(
+                        "Failed to read client secret from environment variable '{CLIENT_SECRET_ENV_VAR}'"
+                    )
+                })?
+        };
+
+        let client_secret: ClientSecret = ClientSecret::new(client_secret_str);
+
         Ok(Config {
             public_url: config.public_url,
             issuer_url: config.issuer_url,
             client_id: config.client_id,
+            client_secret,
             pages_path: config.pages_path,
             title: config.title,
             assets_path: config.assets_path,

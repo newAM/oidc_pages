@@ -83,7 +83,7 @@ async fn main() -> anyhow::Result<()> {
     let client: Client = openidconnect::core::CoreClient::from_provider_metadata(
         metadata.clone(),
         config.client_id,
-        None,
+        Some(config.client_secret),
     )
     .set_redirect_uri(redirect_url)
     .set_token_uri(token_url);

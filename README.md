@@ -73,9 +73,6 @@ You need to bring a reverse proxy for TLS, I suggest [nginx].
   - Client authentication: `On`
   - Authorization: `Off`
   - Authentication flow: `Standard flow` (all others disabled)
-- Enable PKCE
-  - Navigate to **Clients** -> `<client_id>` -> **Advanced**
-  - Proof Key for Code Exchange Code Challenge Method: `S256`
 - Create roles for the newly created client
   - The `admin` role can view all pages
   - All other roles grant permissions to pages in a directory matching the role name
@@ -97,6 +94,8 @@ Create the OAuth2 client:
 kanidm system oauth2 create pages "pages.domain.name" https://pages.domain.name
 kanidm system oauth2 update-scope-map pages oidc_pages_users email openid profile groups
 kanidm system oauth2 get pages
+kanidm system oauth2 show-basic-secret pages
+<SECRET>
 ```
 
 Create permission groups:
@@ -140,9 +139,16 @@ in {
   # add the overlay, this puts "oidc_pages" into "pkgs"
   nixpkgs.overlays = [oidc_pages.overlays.default];
 
+  # use nix-sops to manage secrets declaratively
+  # https://github.com/Mic92/sops-nix
+  sops.secrets.oidc_pages.mode = "0400";
+
   # reference module for descriptions of configuration
   services.oidc_pages = {
     enable = true;
+    # contains
+    # OIDC_PAGES_CLIENT_SECRET=client_secret_goes_here
+    environmentFiles = [config.sops.secrets.oidc_pages.path];
     # give nginx access to oidc_pages.socket
     socketUser = config.services.nginx.user;
     settings = {
