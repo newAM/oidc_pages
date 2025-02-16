@@ -17,7 +17,7 @@
   kanidmUserEmail = "jane.doe@example.com";
   kanidmUsername = "testuser1";
 
-  oidcPagesRoleGroup = "pages_roles";
+  oidcPagesRoleMap = "pages_roles";
 
   pagesPath = "/tmp/pages";
 in
@@ -90,19 +90,17 @@ in
                 "profile"
               ];
               removeOrphanedClaimMaps = true;
-              claimMaps.${oidcPagesRoleGroup}.valuesByGroup.${oidcPagesNotesGroup} = [
+              claimMaps.${oidcPagesRoleMap}.valuesByGroup.${oidcPagesNotesGroup} = [
                 "notes"
               ];
             };
             persons.${kanidmUsername} = {
               displayName = "Test User";
-              legalName = "Jane Doe";
               mailAddresses = [kanidmUserEmail];
             };
             groups = {
               "${oidcPagesUserGroup}".members = [kanidmUsername];
               "${oidcPagesNotesGroup}".members = [kanidmUsername];
-              "${oidcPagesRoleGroup}" = {};
             };
           };
         };
@@ -131,7 +129,7 @@ in
             client_secret_file_path = oidcPagesClientSecretFile;
             pages_path = pagesPath;
             log_level = "info";
-            roles_path = [oidcPagesRoleGroup];
+            roles_path = [oidcPagesRoleMap];
           };
         };
 
