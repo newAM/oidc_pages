@@ -17,7 +17,6 @@ OIDC Pages is designed to work seamlessly with documentation tools such as Sphin
 
 ### Limitations
 
-- Likely incompatible out-of-the-box with other OIDC providers
 - Sessions are stored in-memory and erased on restart
 - Not intended for serving untrusted content
 
