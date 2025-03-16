@@ -2,7 +2,7 @@
 name = "oidc_pages"
 version = "2.0.0"
 authors = ["Alex Martens <alex@thinglab.org>"]
-edition = "2021"
+edition = "2024"
 repository = "https://github.com/newAM/oidc_pages"
 license = "AGPL-3.0-or-later"
 description = "Serve static HTML with OIDC for authorization and authentication"

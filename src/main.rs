@@ -10,14 +10,14 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use config::Config;
-use openidconnect::{core::CoreProviderMetadata, RedirectUrl};
+use openidconnect::{RedirectUrl, core::CoreProviderMetadata};
 use tokio::net::UnixListener;
 use tower_http::services::ServeDir;
 use tower_sessions::{
-    cookie::{self, time::Duration, SameSite},
     Expiry, MemoryStore, SessionManagerLayer,
+    cookie::{self, SameSite, time::Duration},
 };
 use url::Url;
 

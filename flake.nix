@@ -67,7 +67,10 @@
       programs = {
         alejandra.enable = true;
         prettier.enable = true;
-        rustfmt.enable = true;
+        rustfmt = {
+          enable = true;
+          edition = (nixpkgs.lib.importTOML ./Cargo.toml).package.edition;
+        };
         taplo.enable = true;
       };
     };

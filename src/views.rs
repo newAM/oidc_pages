@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use crate::{
-    util::{self, page_title, to_string_array, value_at_path, UnwrapInfallible},
     State,
+    util::{self, UnwrapInfallible, page_title, to_string_array, value_at_path},
 };
 use anyhow::Context;
 use askama::Template;
@@ -180,7 +180,7 @@ pub async fn pages(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to load session: {e:?}"),
             )
-                .into_response()
+                .into_response();
         }
     };
 
