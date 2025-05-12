@@ -59,6 +59,7 @@ in
           package = pkgs.kanidmWithSecretProvisioning;
           enableServer = true;
           serverSettings = {
+            version = "2";
             bindaddress = "0.0.0.0:${toString kanidmPort}";
             domain = kanidmDomain;
             origin = kanidmFrontendUrl;
