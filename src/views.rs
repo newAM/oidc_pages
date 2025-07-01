@@ -287,7 +287,7 @@ async fn fallible_callback(
             let msg: String = format!(
                 "OIDC server returned error '{error}' with description '{error_description}'"
             );
-            log::warn!("{}", msg);
+            log::warn!("{msg}");
             return Ok((StatusCode::BAD_REQUEST, msg).into_response());
         }
         CallbackData::Code {
@@ -310,7 +310,7 @@ async fn fallible_callback(
         }
         _ => {
             let msg: &str = "Failed to load login session";
-            log::warn!("{}", msg);
+            log::warn!("{msg}");
             return Ok((StatusCode::BAD_REQUEST, msg).into_response());
         }
     };
@@ -465,7 +465,7 @@ pub async fn callback(
         Err(e) => {
             session.clear().await;
             let msg: String = format!("Authentication error: {e:?}");
-            log::warn!("{}", msg);
+            log::warn!("{msg}");
             (StatusCode::UNAUTHORIZED, msg).into_response()
         }
     }
