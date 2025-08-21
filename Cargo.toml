@@ -41,7 +41,7 @@ tower-sessions = { version = "0.14.0", default-features = false, features = [
   "private",
   "memory-store",
 ] }
-url = "2.5.2"
+url = "2.5.6"
 
 [dev-dependencies]
 assert_cmd = "2.0.14"
