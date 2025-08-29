@@ -56,7 +56,7 @@ in
         networking.firewall.allowedTCPPorts = [kanidmPort];
 
         services.kanidm = {
-          package = pkgs.kanidmWithSecretProvisioning;
+          package = pkgs.kanidmWithSecretProvisioning_1_7;
           enableServer = true;
           serverSettings = {
             version = "2";
