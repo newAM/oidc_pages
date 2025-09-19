@@ -14,7 +14,7 @@ categories = [
 ]
 
 [dependencies]
-anyhow = "1.0.86"
+anyhow = "1.0.100"
 askama = "0.14.0"
 axum = { version = "0.8.1", default-features = false, features = [
   "http1",
