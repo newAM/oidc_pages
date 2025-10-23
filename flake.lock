@@ -3,11 +3,11 @@
     "advisory-db": {
       "flake": false,
       "locked": {
-        "lastModified": 1761133710,
-        "narHash": "sha256-Cs/Y/lLDGa8uKoGJo3D0agp11jYtPpCUJSuT9Cwl990=",
+        "lastModified": 1761168209,
+        "narHash": "sha256-qoJv7hocidOsaD73o5i23Rx1hJ9rpY0AIy07thvh+P4=",
         "owner": "rustsec",
         "repo": "advisory-db",
-        "rev": "3141804f1f416e318b1093ee93d46ab07d213a12",
+        "rev": "e4a6f4fd31ceb7df2cd94a1de45216541c74f783",
         "type": "github"
       },
       "original": {
@@ -33,11 +33,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1760878510,
-        "narHash": "sha256-K5Osef2qexezUfs0alLvZ7nQFTGS9DL2oTVsIXsqLgs=",
+        "lastModified": 1761114652,
+        "narHash": "sha256-f/QCJM/YhrV/lavyCVz8iU3rlZun6d+dAiC3H+CDle4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "5e2a59a5b1a82f89f2c7e598302a9cacebb72a67",
+        "rev": "01f116e4df6a15f4ccdffb1bcd41096869fb385c",
         "type": "github"
       },
       "original": {
