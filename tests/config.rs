@@ -1,9 +1,9 @@
-use assert_cmd::Command;
+use assert_cmd::{Command, cargo::cargo_bin_cmd};
 use std::io::Write;
 use tempfile::NamedTempFile;
 
 fn main_bin() -> Command {
-    Command::cargo_bin(assert_cmd::crate_name!()).unwrap()
+    cargo_bin_cmd!()
 }
 
 #[test]

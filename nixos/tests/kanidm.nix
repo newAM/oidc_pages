@@ -21,7 +21,7 @@
 
   pagesPath = "/tmp/pages";
 in
-  pkgs.nixosTest {
+  pkgs.testers.nixosTest {
     name = "kanidm";
 
     nodes = {

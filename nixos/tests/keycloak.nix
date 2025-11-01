@@ -68,7 +68,7 @@
 
   rolesDataJson = pkgs.writeText "roles-data.json" (builtins.toJSON roles);
 in
-  pkgs.nixosTest {
+  pkgs.testers.nixosTest {
     name = "keycloak";
 
     nodes = {
