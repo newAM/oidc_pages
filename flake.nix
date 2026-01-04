@@ -18,13 +18,15 @@
     crane,
     treefmt,
   }: let
-    pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    craneLib = crane.mkLib pkgs;
+    forEachSystem = nixpkgs.lib.genAttrs [
+      "aarch64-linux"
+      "x86_64-linux"
+    ];
 
-    commonArgs = let
+    mkCommonArgs = pkgs: let
       htmlFilter = path: _type: builtins.match ".*html$" path != null;
       htmlOrCargo = path: type:
-        (htmlFilter path type) || (craneLib.filterCargoSources path type);
+        (htmlFilter path type) || ((crane.mkLib pkgs).filterCargoSources path type);
     in {
       src = nixpkgs.lib.cleanSourceWith {
         src = self;
@@ -60,65 +62,92 @@
       };
     };
 
-    cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+    mkCargoArtifacts = pkgs: (crane.mkLib pkgs).buildDepsOnly (mkCommonArgs pkgs);
 
-    treefmtEval = treefmt.lib.evalModule pkgs {
-      projectRootFile = "flake.nix";
-      programs = {
-        alejandra.enable = true;
-        prettier.enable = true;
-        rustfmt = {
-          enable = true;
-          edition = (nixpkgs.lib.importTOML ./Cargo.toml).package.edition;
+    mkPackage = pkgs:
+      (crane.mkLib pkgs).buildPackage (
+        nixpkgs.lib.recursiveUpdate (mkCommonArgs pkgs) {
+          cargoArtifacts = mkCargoArtifacts pkgs;
+        }
+      );
+
+    treefmtEval = pkgs:
+      treefmt.lib.evalModule pkgs {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true;
+          prettier.enable = true;
+          rustfmt = {
+            enable = true;
+            edition = (nixpkgs.lib.importTOML ./Cargo.toml).package.edition;
+          };
+          taplo.enable = true;
         };
-        taplo.enable = true;
       };
-    };
   in {
-    devShells.x86_64-linux.default = pkgs.mkShell {
-      inherit (commonArgs) nativeBuildInputs buildInputs;
+    devShells = forEachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+        commonArgs = mkCommonArgs pkgs;
+      in {
+        default = pkgs.mkShell {
+          inherit (commonArgs) nativeBuildInputs buildInputs;
 
-      shellHook = let
-        libPath = nixpkgs.lib.makeLibraryPath commonArgs.buildInputs;
-      in ''
-        export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
-        export LD_LIBRARY_PATH="${libPath}";
-      '';
-    };
-
-    packages.x86_64-linux.default = craneLib.buildPackage (
-      nixpkgs.lib.recursiveUpdate
-      commonArgs
-      {
-        inherit cargoArtifacts;
+          shellHook = let
+            libPath = nixpkgs.lib.makeLibraryPath commonArgs.buildInputs;
+          in ''
+            export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
+            export LD_LIBRARY_PATH="${libPath}";
+          '';
+        };
       }
     );
 
-    formatter.x86_64-linux = treefmtEval.config.build.wrapper;
+    packages = forEachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        default = mkPackage pkgs;
+      }
+    );
 
-    checks.x86_64-linux = {
-      pkgs = self.packages.x86_64-linux.default;
+    formatter = forEachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+        (treefmtEval pkgs).config.build.wrapper
+    );
 
-      formatting = treefmtEval.config.build.check self;
+    checks = forEachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+        commonArgs = mkCommonArgs pkgs;
+      in {
+        pkg = self.packages.${system}.default;
 
-      audit = craneLib.cargoAudit (nixpkgs.lib.recursiveUpdate commonArgs {
-        inherit advisory-db;
-      });
+        formatting = (treefmtEval pkgs).config.build.check self;
 
-      clippy = craneLib.cargoClippy (nixpkgs.lib.recursiveUpdate
-        commonArgs
-        {
-          cargoClippyExtraArgs = "--all-targets -- --deny warnings";
-          inherit cargoArtifacts;
-        });
+        audit = (crane.mkLib pkgs).cargoAudit (
+          nixpkgs.lib.recursiveUpdate commonArgs {
+            inherit advisory-db;
+          }
+        );
 
-      keycloak = pkgs.callPackage ./nixos/tests/keycloak.nix {inherit self;};
+        clippy = (crane.mkLib pkgs).cargoClippy (
+          nixpkgs.lib.recursiveUpdate commonArgs {
+            cargoClippyExtraArgs = "--all-targets -- --deny warnings";
+            cargoArtifacts = mkCargoArtifacts pkgs;
+          }
+        );
 
-      kanidm = pkgs.callPackage ./nixos/tests/kanidm.nix {inherit self;};
-    };
+        keycloak = pkgs.callPackage ./nixos/tests/keycloak.nix {inherit self;};
+
+        kanidm = pkgs.callPackage ./nixos/tests/kanidm.nix {inherit self;};
+      }
+    );
 
     overlays.default = final: prev: {
-      oidc_pages = self.packages.${prev.system}.default;
+      oidc_pages = mkPackage prev;
     };
 
     nixosModules.default = import ./nixos/module.nix;
