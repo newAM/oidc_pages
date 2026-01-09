@@ -44,6 +44,6 @@ tower-sessions = { version = "0.14.0", default-features = false, features = [
 url = "2.5.2"
 
 [dev-dependencies]
-assert_cmd = "2.0.14"
+assert_cmd = "2.1.2"
 predicates = "3.1.0"
 tempfile = "3.10.1"
