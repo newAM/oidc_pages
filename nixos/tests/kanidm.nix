@@ -202,8 +202,8 @@ in
 
       # check we are not authenticated
       index_html_pre_login: str = machine.succeed("curl -sSf ${oidcPagesFrontendUrl}")
-      assert unauthenticated in index_html_pre_login
-      assert authenticated not in index_html_pre_login
+      assert unauthenticated in index_html_pre_login, "Unauthenticated string not in pre-login index"
+      assert authenticated not in index_html_pre_login, "Authenticated string in pre-login index"
 
       # check unauthenticated users cannot view pages
       machine.succeed(
