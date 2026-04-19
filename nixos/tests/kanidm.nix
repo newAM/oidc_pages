@@ -13,7 +13,6 @@
 
   kanidmPort = 8443;
   kanidmFrontendUrl = "https://${kanidmDomain}:${toString kanidmPort}";
-  kanidmUserPassword = "a8LRTUU7wgdwx5cKbbGa95JUxBEDJkYMHYybEu68dGSsgreF";
   kanidmUserEmail = "jane.doe@example.com";
   kanidmUsername = "testuser1";
 
@@ -56,21 +55,25 @@ in
         networking.firewall.allowedTCPPorts = [kanidmPort];
 
         services.kanidm = {
-          package = pkgs.kanidmWithSecretProvisioning_1_8;
-          enableServer = true;
-          serverSettings = {
-            version = "2";
-            bindaddress = "0.0.0.0:${toString kanidmPort}";
-            domain = kanidmDomain;
-            origin = kanidmFrontendUrl;
-            tls_chain = ./keycloak.local.cert.pem;
-            tls_key = ./keycloak.local.key.pem;
+          package = pkgs.kanidmWithSecretProvisioning_1_9;
+          server = {
+            enable = true;
+            settings = {
+              version = "2";
+              bindaddress = "0.0.0.0:${toString kanidmPort}";
+              domain = kanidmDomain;
+              origin = kanidmFrontendUrl;
+              tls_chain = ./keycloak.local.cert.pem;
+              tls_key = ./keycloak.local.key.pem;
+            };
           };
-          enableClient = true;
-          clientSettings = {
-            uri = kanidmFrontendUrl;
-            verify_ca = true;
-            verify_hostnames = true;
+          client = {
+            enable = true;
+            settings = {
+              uri = kanidmFrontendUrl;
+              verify_ca = true;
+              verify_hostnames = true;
+            };
           };
           provision = let
             oidcPagesUserGroup = "oidc_pages_users";
@@ -172,7 +175,7 @@ in
       kanidm.wait_until_succeeds("curl -sSf ${kanidmFrontendUrl}")
 
       # set user password
-      kanidm.succeed("KANIDM_RECOVER_ACCOUNT_PASSWORD=${kanidmUserPassword} kanidmd recover-account ${kanidmUsername} --from-environment")
+      pw = kanidm.succeed("kanidmd recover-account ${kanidmUsername} 2>&1 | rg -o \'[A-Za-z0-9]{48}\'").strip().removeprefix("'").removesuffix("'")
 
       # create some pages
       page_content: str = "<p>Hello World from {name}</p>"
@@ -232,7 +235,7 @@ in
 
       # post the password form and get the resume session redirect
       resume_session_url: str = machine.succeed(
-          f"curl -sSf -b sso_cookies.txt -c sso_cookies.txt -w %{{redirect_url}} -d 'password=${kanidmUserPassword}' '{password_form_post_url}'",
+          f"curl -sSf -b sso_cookies.txt -c sso_cookies.txt -w %{{redirect_url}} -d 'password={pw}' '{password_form_post_url}'",
       ).rstrip()
       print(f"{resume_session_url=}")
       assert resume_session_url.startswith("https://"), "Invalid resume session URL"
