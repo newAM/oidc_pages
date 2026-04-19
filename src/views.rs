@@ -47,7 +47,7 @@ impl Ord for Page {
 #[template(path = "index.html")]
 struct IndexTemplate {
     title: String,
-    user: Option<User>,
+    user: User,
     pages: Vec<Page>,
 }
 
@@ -141,7 +141,7 @@ pub async fn index(
     state: axum::extract::State<State>,
     session: Session,
 ) -> axum::response::Response {
-    let user: Option<User> = match session.get(USER_KEY).await {
+    let maybe_user: Option<User> = match session.get(USER_KEY).await {
         Ok(u) => u,
         Err(e) => {
             session.clear().await;
@@ -152,16 +152,18 @@ pub async fn index(
                 .into_response();
         }
     };
-    let pages: Vec<Page> = match user.as_ref() {
-        Some(user) => list_pages(state.pages_path.clone(), &user.roles).await,
-        None => vec![],
-    };
-    let template: IndexTemplate = IndexTemplate {
-        title: state.title.clone(),
-        user,
-        pages,
-    };
-    HtmlTemplate(template).into_response()
+
+    if let Some(user) = maybe_user {
+        let pages: Vec<Page> = list_pages(state.pages_path.clone(), &user.roles).await;
+        let template: IndexTemplate = IndexTemplate {
+            title: state.title.clone(),
+            user,
+            pages,
+        };
+        HtmlTemplate(template).into_response()
+    } else {
+        Redirect::temporary("/login").into_response()
+    }
 }
 
 pub async fn pages(

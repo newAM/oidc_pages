@@ -13,7 +13,7 @@
   <body>
     <h1>{{ title }}</h1>
 
-    {% if let Some(user) = user %} {% if pages.len() > 0 %}
+    {% if pages.len() > 0 %}
     <ul>
       {% for page in pages %}
       <li><a href="/p/{{ page.dir }}/index.html">{{ page.title }}</a></li>
@@ -25,9 +25,6 @@
     <p>You are signed in as {{ username }}.</p>
     {% endif %}
     <a href="/logout">Logout</a>
-    {% else %}
-    <a href="/login">Login to view documents...</a>
-    {% endif %}
 
     <p>
       Powered by <a href="https://github.com/newAM/oidc_pages">OIDC Pages</a>,
