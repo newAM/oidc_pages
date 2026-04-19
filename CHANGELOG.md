@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added a configuration option `client_secret_file_path` to pass the client secret by file path instead of environment variable.
+- Added silent SSO, where users already authenticated with the OIDC provider are logged in automatically.
 
 ## [2.0.0] - 2025-02-08
 

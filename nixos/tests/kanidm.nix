@@ -198,12 +198,11 @@ in
       machine.succeed("curl -sSf ${oidcPagesFrontendUrl}/assets/favicon.svg")
 
       authenticated: str = "You are signed in as"
-      unauthenticated: str = "Login to view documents..."
+      login_url: str = "${oidcPagesFrontendUrl}/login"
 
-      # check we are not authenticated
-      index_html_pre_login: str = machine.succeed("curl -sSf ${oidcPagesFrontendUrl}")
-      assert unauthenticated in index_html_pre_login, "Unauthenticated string not in pre-login index"
-      assert authenticated not in index_html_pre_login, "Authenticated string in pre-login index"
+      # check unauthenticated GET redirects to login
+      pre_login_redirect: str = machine.succeed("curl -sS -o /dev/null -w %{redirect_url} '${oidcPagesFrontendUrl}'").rstrip()
+      assert pre_login_redirect == login_url, f"Expected redirect to {login_url}, got {pre_login_redirect!r}"
 
       # check unauthenticated users cannot view pages
       machine.succeed(
@@ -265,7 +264,6 @@ in
 
       # check that authentication succeeded
       assert authenticated in index_html, "Authenticated string not in index"
-      assert unauthenticated not in index_html, "Unauthenticated string in index"
 
       # check index.html only lists the pages we are authorized for
       assert "notes" in index_html, "notes not listed in index"
