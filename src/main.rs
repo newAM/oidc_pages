@@ -125,6 +125,10 @@ async fn main() -> anyhow::Result<()> {
         .merge(app_routes)
         .merge(pages_routes)
         .layer(session_layer)
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::X_FRAME_OPTIONS,
+            HeaderValue::from_static("SAMEORIGIN"),
+        ))
         .with_state(State {
             client,
             metadata,
