@@ -10,11 +10,15 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{Router, routing::get};
+use axum::{
+    Router,
+    http::header::{self, HeaderValue},
+    routing::get,
+};
 use config::Config;
 use openidconnect::{RedirectUrl, core::CoreProviderMetadata};
 use tokio::net::UnixListener;
-use tower_http::services::ServeDir;
+use tower_http::{services::ServeDir, set_header::SetResponseHeaderLayer};
 use tower_sessions::{
     Expiry, MemoryStore, SessionManagerLayer,
     cookie::{self, SameSite, time::Duration},
@@ -102,14 +106,24 @@ async fn main() -> anyhow::Result<()> {
         .with_path("/")
         .with_private(session_key);
 
-    let app: Router = Router::new()
+    let app_routes: Router<State> = Router::new()
         .route("/", get(views::index))
         .route("/login", get(views::login))
         .route("/logout", get(views::logout))
         .route("/callback", get(views::callback))
         .route("/robots.txt", get(views::robots_txt))
-        .route("/p/{page_name}/{*page_path}", get(views::pages))
         .nest_service("/assets", ServeDir::new(config.assets_path))
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::CONTENT_SECURITY_POLICY,
+            HeaderValue::from_static("default-src 'self'; frame-ancestors 'none'"),
+        ));
+
+    let pages_routes: Router<State> =
+        Router::new().route("/p/{page_name}/{*page_path}", get(views::pages));
+
+    let app: Router = Router::new()
+        .merge(app_routes)
+        .merge(pages_routes)
         .layer(session_layer)
         .with_state(State {
             client,
