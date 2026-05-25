@@ -144,12 +144,9 @@ pub async fn index(
     let maybe_user: Option<User> = match session.get(USER_KEY).await {
         Ok(u) => u,
         Err(e) => {
+            log::error!("Failed to load session: {e:?}");
             session.clear().await;
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to load session: {e:?}"),
-            )
-                .into_response();
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
         }
     };
 
@@ -178,11 +175,8 @@ pub async fn pages(
         Ok(Some(user)) => user,
         Ok(None) => return not_found,
         Err(e) => {
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Failed to load session: {e:?}"),
-            )
-                .into_response();
+            log::error!("Failed to load session: {e:?}");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
         }
     };
 
@@ -234,22 +228,20 @@ pub async fn login(
         session.insert(CSRF_TOKEN_KEY, csrf_token)
     ) {
         Ok(_) => Redirect::temporary(auth_url.as_str()).into_response(),
-        Err(e) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Failed store login session.  Error: {e:?}"),
-        )
-            .into_response(),
+        Err(e) => {
+            log::error!("Failed to store login session: {e:?}");
+            (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response()
+        }
     }
 }
 
 pub async fn logout(session: Session) -> axum::response::Response {
     match session.delete().await {
         Ok(_) => Redirect::temporary("/").into_response(),
-        Err(e) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Failed to logout.  Error: {e:?}"),
-        )
-            .into_response(),
+        Err(e) => {
+            log::error!("Failed to logout: {e:?}");
+            (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response()
+        }
     }
 }
 
@@ -471,9 +463,8 @@ pub async fn callback(
         }
         Err(e) => {
             session.clear().await;
-            let msg: String = format!("Authentication error: {e:?}");
-            log::warn!("{msg}");
-            (StatusCode::UNAUTHORIZED, msg).into_response()
+            log::warn!("Authentication error: {e:?}");
+            (StatusCode::UNAUTHORIZED, "Unauthorized").into_response()
         }
     }
 }

@@ -127,7 +127,7 @@ async fn main() -> anyhow::Result<()> {
         .layer(session_layer)
         .layer(SetResponseHeaderLayer::if_not_present(
             header::X_FRAME_OPTIONS,
-            HeaderValue::from_static("SAMEORIGIN"),
+            HeaderValue::from_static("DENY"),
         ))
         .with_state(State {
             client,
