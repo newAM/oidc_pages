@@ -187,12 +187,17 @@ pub async fn pages(
     };
 
     if user_can_view_page(&user.roles, &page_name) {
-        let mut path = state.pages_path.clone();
-        path.push(page_name);
-        path.push(page_path);
+        let mut path: PathBuf = state.pages_path.clone();
+        path.push(&page_name);
+        path.push(&page_path);
 
-        if path.exists() {
-            let service: ServeFile = ServeFile::new(path);
+        let canonical: PathBuf = match tokio::fs::canonicalize(&path).await {
+            Ok(p) => p,
+            Err(_) => return not_found,
+        };
+
+        if canonical.starts_with(&state.pages_path) {
+            let service: ServeFile = ServeFile::new(canonical);
             service
                 .oneshot(request)
                 .await
