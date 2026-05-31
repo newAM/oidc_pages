@@ -130,6 +130,11 @@ async fn main() -> anyhow::Result<()> {
             header::X_FRAME_OPTIONS,
             HeaderValue::from_static("DENY"),
         ))
+        // Prevent leaking page URLs to external sites via the Referer header
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::REFERRER_POLICY,
+            HeaderValue::from_static("strict-origin-when-cross-origin"),
+        ))
         .with_state(State {
             client,
             metadata,

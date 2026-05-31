@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `/logged_out` page to inform users they have been signed out, with a link to sign back in.
 - Added a `Content-Security-Policy` header to app routes.
 - Added a `X-Frame-Options` header to all routes.
+- Added a `Referrer-Policy` header to all routes.
 
 ## [2.0.0] - 2025-02-08
 
