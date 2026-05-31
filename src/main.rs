@@ -110,6 +110,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/", get(views::index))
         .route("/login", get(views::login))
         .route("/logout", get(views::logout))
+        .route("/logged_out", get(views::logged_out))
         .route("/callback", get(views::callback))
         .route("/robots.txt", get(views::robots_txt))
         .nest_service("/assets", ServeDir::new(config.assets_path))

@@ -284,5 +284,18 @@ in
       machine.succeed(
           'curl -sS -b pages_cookies.txt -o /dev/null -w "%{http_code}" ${oidcPagesFrontendUrl}/p/notes/../../top_secret/index.html | grep -q "^404$"',
       )
+
+      # check logout redirects to /logged_out
+      logout_redirect: str = machine.succeed("curl -sS -b pages_cookies.txt -o /dev/null -w %{redirect_url} ${oidcPagesFrontendUrl}/logout").rstrip()
+      assert logout_redirect == "${oidcPagesFrontendUrl}/logged_out", f"Expected redirect to /logged_out, got {logout_redirect!r}"
+
+      # check the logged_out page contains the expected text
+      logged_out_html: str = machine.succeed("curl -sSf ${oidcPagesFrontendUrl}/logged_out")
+      assert "You have been logged out" in logged_out_html, "Logged out text not in page"
+      assert "Sign in" in logged_out_html, "Sign in link not in page"
+
+      # check that after logout the user is no longer authenticated
+      post_logout_redirect: str = machine.succeed("curl -sS -b pages_cookies.txt -o /dev/null -w %{redirect_url} '${oidcPagesFrontendUrl}'").rstrip()
+      assert post_logout_redirect == login_url, f"Expected redirect to {login_url}, got {post_logout_redirect!r}"
     '';
   }

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a configuration option `client_secret_file_path` to pass the client secret by file path instead of environment variable.
 - Added silent SSO, where users already authenticated with the OIDC provider are logged in automatically.
+- Added a `/logged_out` page to inform users they have been signed out, with a link to sign back in.
 - Added a `Content-Security-Policy` header to app routes.
 - Added a `X-Frame-Options` header to all routes.
 

@@ -51,6 +51,12 @@ struct IndexTemplate {
     pages: Vec<Page>,
 }
 
+#[derive(Template)]
+#[template(path = "logged_out.html")]
+struct LoggedOutTemplate {
+    title: String,
+}
+
 struct HtmlTemplate<T>(T);
 
 impl<T> IntoResponse for HtmlTemplate<T>
@@ -237,12 +243,19 @@ pub async fn login(
 
 pub async fn logout(session: Session) -> axum::response::Response {
     match session.delete().await {
-        Ok(_) => Redirect::temporary("/").into_response(),
+        Ok(_) => Redirect::temporary("/logged_out").into_response(),
         Err(e) => {
             log::error!("Failed to logout: {e:?}");
             (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response()
         }
     }
+}
+
+pub async fn logged_out(state: axum::extract::State<State>) -> axum::response::Response {
+    HtmlTemplate(LoggedOutTemplate {
+        title: state.title.clone(),
+    })
+    .into_response()
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
