@@ -1,7 +1,8 @@
 [advisories]
-# https://github.com/ramosbugs/openidconnect-rs/issues/140
 ignore = [
+  # https://github.com/ramosbugs/openidconnect-rs/issues/140
   "RUSTSEC-2023-0071",
+  # basic-toml is unmaintained
   "RUSTSEC-2026-0374",
 ]
 
