@@ -21,7 +21,10 @@ axum = { version = "0.8.1", default-features = false, features = [
   "query",
   "tokio",
 ] }
-jsonwebtoken = { version = "11.0.0", features = ["rust_crypto"] }
+# https://github.com/Keats/jsonwebtoken/pull/536
+jsonwebtoken = { git = "https://github.com/newAM/jsonwebtoken.git", branch = "master", features = [
+  "rust_crypto",
+] }
 log = "0.4.21"
 openidconnect = { version = "4", default-features = false, features = [
   "native-tls",
