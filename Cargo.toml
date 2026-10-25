@@ -26,7 +26,8 @@ jsonwebtoken = { git = "https://github.com/newAM/jsonwebtoken.git", branch = "ma
   "rust_crypto",
 ] }
 log = "0.4.21"
-openidconnect = { version = "4", default-features = false, features = [
+# https://github.com/ramosbugs/openidconnect-rs/pull/244
+openidconnect = { git = "https://github.com/newAM/openidconnect-rs.git", branch = "main", default-features = false, features = [
   "native-tls",
   "reqwest",
   "timing-resistant-secret-traits",
