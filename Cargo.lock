@@ -982,9 +982,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "300e883d756b2e4ec94e02791f39b04b522276138852cfc41d9fb7e904106099"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "r-efi 6.0.0",
  "rand_core 0.10.1",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1672,13 +1674,14 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "openidconnect"
-version = "4.0.1"
-source = "git+https://github.com/newAM/openidconnect-rs.git?branch=main#19f55426f25f654da06b7fada5e5edc8d3a8a5b8"
+version = "4.1.0"
+source = "git+https://github.com/newAM/openidconnect-rs.git?branch=main#71d1a47dd17a393e847924391d8f7036baf6c9c2"
 dependencies = [
  "base64 0.23.1",
  "chrono",
  "dyn-clone",
  "ed25519-dalek",
+ "getrandom 0.4.3",
  "hmac 0.13.0",
  "http",
  "itertools",
