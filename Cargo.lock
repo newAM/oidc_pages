@@ -1529,9 +1529,9 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
 name = "mime"
-version = "0.3.17"
+version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+checksum = "d5848f5a9e8117cf94f2f90faac24a87ff81600ff8628c1e3deaab572e76bfa1"
 
 [[package]]
 name = "mime_guess"
@@ -2243,9 +2243,9 @@ dependencies = [
 
 [[package]]
 name = "rsa"
-version = "0.10.0-rc.20"
+version = "0.10.0-rc.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2389407c34c6039d7c8740520ec758090883c5b92df93a5edada2779256bf2e0"
+checksum = "47cf9537fc2210e5db7a35a1cdda9d8d451b9df6fba234ec1cf0cd746c120c35"
 dependencies = [
  "const-oid",
  "crypto-bigint",
