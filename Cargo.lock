@@ -242,12 +242,6 @@ dependencies = [
 
 [[package]]
 name = "bitflags"
-version = "1.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
-
-[[package]]
-name = "bitflags"
 version = "2.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06"
@@ -426,9 +420,9 @@ dependencies = [
 
 [[package]]
 name = "crypto-bigint"
-version = "0.7.10"
+version = "0.7.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c035cb64cba03dad2fb921f3e218785e8cf9a41790da5eb3a1400f62fa2be11"
+checksum = "914c195c4d7fbc5ed7f88d14cbf85914d5c664967658d43404b263913a477e82"
 dependencies = [
  "cpubits",
  "ctutils",
@@ -574,37 +568,6 @@ dependencies = [
  "darling_core",
  "quote",
  "syn 3.0.9",
-]
-
-[[package]]
-name = "defmt"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4a0795ac740cb54d7b3775c9c17345f6aaecf884c01733b39d6017738e0e3e1"
-dependencies = [
- "bitflags 1.3.2",
- "defmt-macros",
-]
-
-[[package]]
-name = "defmt-macros"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "840bb056bd99c495c9188198a258ab787c79f306d864db3e6e8451442d6d8366"
-dependencies = [
- "defmt-parser",
- "proc-macro2",
- "quote",
- "syn 3.0.9",
-]
-
-[[package]]
-name = "defmt-parser"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71958f69fb2de856c5dd51ac9377e986ca1aa5919f931bf5395a807277f889a0"
-dependencies = [
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -1379,17 +1342,16 @@ dependencies = [
 
 [[package]]
 name = "itoa"
-version = "1.0.18"
+version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
+checksum = "3bd1574e617a9a6c1f8f8181bd7e841e1f20e4277607ef28945765188d6284d4"
 
 [[package]]
 name = "jiff"
-version = "0.2.39"
+version = "0.2.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ac703058abac89e5c39b0b879dce2b6b14a4ba36600c7e7e3d0c60a6883ef3c"
+checksum = "fcefdcefac59ac8f8401852e3427d55610481fc41e6625c39bac62d2d771623a"
 dependencies = [
- "defmt",
  "jiff-core",
  "jiff-static",
  "jiff-tzdb-platform",
@@ -1402,19 +1364,18 @@ dependencies = [
 
 [[package]]
 name = "jiff-core"
-version = "0.1.2"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aee43309eb53bafb8c36d35d6e444769c8f8e6206a9fbf7546f5db9d7d4a0e93"
+checksum = "77a24020db0ee88d1c681d677681bd31f9f4ea189a455425223d52ce4f1508aa"
 dependencies = [
- "defmt",
  "log",
 ]
 
 [[package]]
 name = "jiff-static"
-version = "0.2.39"
+version = "0.2.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6dc32470c67eb7d0e9ccb74303fa925313dc04cecb1aa048beaa6f391e36a93d"
+checksum = "203edf9b0ce4083ec8fbf4adc823eac89768ea994b4953fc0dab1b90083234dd"
 dependencies = [
  "jiff-core",
  "proc-macro2",
@@ -1451,7 +1412,7 @@ dependencies = [
 [[package]]
 name = "jsonwebtoken"
 version = "11.1.0"
-source = "git+https://github.com/newAM/jsonwebtoken.git?branch=master#c5bb9a7c71f304371596dbb2454dc7c2e103371d"
+source = "git+https://github.com/newAM/jsonwebtoken.git?branch=master#3d66bf577de1e02f3cbbc69fe51cd686112e5274"
 dependencies = [
  "base64 0.22.1",
  "ed25519-dalek",
@@ -1677,7 +1638,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openidconnect"
 version = "4.1.0"
-source = "git+https://github.com/newAM/openidconnect-rs.git?branch=main#71d1a47dd17a393e847924391d8f7036baf6c9c2"
+source = "git+https://github.com/newAM/openidconnect-rs.git?branch=main#a1857071c99d3ed5a0a2d1fc7675f33a81ac7800"
 dependencies = [
  "base64 0.23.1",
  "chrono",
@@ -1711,7 +1672,7 @@ version = "0.10.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4de8111e94a56adca7ebfe6c365b6d42f99deb69b74b6becacd4204e2f193aa2"
 dependencies = [
- "bitflags 2.13.2",
+ "bitflags",
  "cfg-if",
  "foreign-types",
  "libc",
@@ -2143,7 +2104,7 @@ version = "0.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed2bf2547551a7053d6fdfafda3f938979645c44812fbfcda098faae3f1a362d"
 dependencies = [
- "bitflags 2.13.2",
+ "bitflags",
 ]
 
 [[package]]
@@ -2243,9 +2204,9 @@ dependencies = [
 
 [[package]]
 name = "rsa"
-version = "0.10.0-rc.21"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47cf9537fc2210e5db7a35a1cdda9d8d451b9df6fba234ec1cf0cd746c120c35"
+checksum = "23e77fd77e0dea28b3011fd62d15445b7de7959333b0276d930e03be0f755699"
 dependencies = [
  "const-oid",
  "crypto-bigint",
@@ -2283,7 +2244,7 @@ version = "1.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa"
 dependencies = [
- "bitflags 2.13.2",
+ "bitflags",
  "errno",
  "libc",
  "linux-raw-sys",
@@ -2384,7 +2345,7 @@ version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7f4bc775c73d9a02cde8bf7b2ec4c9d12743edf609006c7facc23998404cd1d"
 dependencies = [
- "bitflags 2.13.2",
+ "bitflags",
  "core-foundation",
  "core-foundation-sys",
  "libc",
@@ -2407,7 +2368,7 @@ version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8322aebea94a6cc288ff884e8a49bdbceef60206c400c6c46d22e62fc4fd91a6"
 dependencies = [
- "bitflags 2.13.2",
+ "bitflags",
  "cssparser",
  "derive_more",
  "log",
@@ -2635,9 +2596,9 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
 name = "smallvec"
-version = "1.16.4"
+version = "1.16.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0d5d4b1981b8bbbb7aed204cae5726d683d5d6ac7e74ec54122ea28f315e7c8"
+checksum = "149309498a5f7334b12ddae0cad8aba81ce785fe91755068867e017cf98fee46"
 
 [[package]]
 name = "socket2"
@@ -2955,7 +2916,7 @@ version = "0.6.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4cfcf7e2740e6fc6d4d688b4ef00650406bb94adf4731e43c096c3a19fe40840"
 dependencies = [
- "bitflags 2.13.2",
+ "bitflags",
  "bytes",
  "futures-core",
  "futures-util",
