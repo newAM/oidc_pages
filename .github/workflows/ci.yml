@@ -13,8 +13,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: cachix/install-nix-action@v31
+      - uses: actions/checkout@v7.0.1
+      - uses: cachix/install-nix-action@v31.11.5
       - uses: cachix/cachix-action@v17
         with:
           name: newam
@@ -27,7 +27,7 @@ jobs:
     needs: [check]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - uses: dtolnay/rust-toolchain@nightly
       - name: Publish
         run: cargo publish --no-verify --token ${CRATES_IO_TOKEN}
