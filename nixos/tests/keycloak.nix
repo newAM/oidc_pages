@@ -123,8 +123,8 @@ in
           initialAdminPassword = keycloakInitialAdminPassword;
           database = {
             type = "postgresql";
-            username = "bogus";
-            name = "also bogus";
+            username = "keycloak";
+            name = "keycloak";
             passwordFile = "${pkgs.writeText "dbPassword" ''wzf6\"vO"Cb\nP>p#6;c&o?eu=q'THE'''H''''E''}";
           };
         };
