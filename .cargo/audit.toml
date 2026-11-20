@@ -4,6 +4,8 @@ ignore = [
   "RUSTSEC-2023-0071",
   # basic-toml is unmaintained
   "RUSTSEC-2026-0374",
+  # chrono is unmaintained
+  "RUSTSEC-2026-0543",
 ]
 
 [output]
